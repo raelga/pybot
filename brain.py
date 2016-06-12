@@ -3,8 +3,8 @@
 import os
 import time
 import importlib
-
 import logging
+import threading
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -37,15 +37,32 @@ def memories() :
     
     return knowledge
 
+import queue
+
+def thougth(working_memory, knowledge, action, input):
+    try:
+        response = getattr(knowledge, action)(input)
+        if response: working_memory.put(response)
+    except:
+        logger.warn("%s not know how to %s" % (knowledge.__name__, action))
+
 def process(action, input) :
+
+    thoughts = list()
+    working_memory = queue.Queue()
+
+    for knowledge in memories() :
+            thought = threading.Thread(target=thougth, args=(working_memory, knowledge, action, input))
+            thoughts.append(thought)
+            thought.start()
+
+    for thought in thoughts:
+        thought.join()
 
     output = list()
 
-    for knowledge in memories() :
-        try:
-            output.append(getattr(knowledge, action)(input))
-        except:
-            logger.warn("%s not know how to %s" % (knowledge.__name__, action))
+    while not working_memory.empty():
+        output.append(working_memory.get())
 
     return output
 
