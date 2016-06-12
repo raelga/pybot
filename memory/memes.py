@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+"""
+ memes.py       Generate a meme image using memecaptain API.
+ Author:        Rael Garcia <self@rael.io>
+ Date:          06/2016
+ Usage:         Import an used hear(text) to generate a 
+                meme based on text.
+ Tested on:     Python 3 / OS X 10.11.5
+"""
 
 import requests
 import time

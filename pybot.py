@@ -1,5 +1,11 @@
 #!/usr/bin/env python
-
+"""
+ pyboy.py       Telegram bot using python-telegram-bot.
+ Author:        Rael Garcia <self@rael.io>
+ Date:          06/2016
+ Usage:         Export TELEGRAM_TOKEN variable and run the bot. 
+ Tested on:     Python 3 / OS X 10.11.5
+"""
 import re
 import os
 
@@ -39,21 +45,17 @@ def hear(bot, update):
     """Function to handle text messages"""
     thoughts = brain.ears(update.message.text)
 
-    log_message(bot, update)
+    remember(bot, update)
     speak(bot, update, thoughts)
 
 def speak(bot, update, thoughts):
-
+    """Function to handle text messages"""
     for words in thoughts:
         bot.sendMessage(update.message.chat_id, text=words)
 
-def log_message(bot, update):
-    logger.info(update.update_id)
-    logger.info(update.message.message_id)
-    logger.info(update.message.from_user.first_name)
-    logger.info(update.message.from_user.last_name)
-    logger.info(update.message.date)
-    logger.info(update.message.text)
+def remember(bot, update):
+    m = update.message
+    brain.remember(m.date, m.chat_id, m.from_user.id, m.text)
 
 def main():
     updater = Updater(os.environ['TELEGRAM_TOKEN'])

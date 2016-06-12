@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+"""
+ brain.py       Wrapper to allow dynamic plug-in architecture in bots.
+ Author:        Rael Garcia <self@rael.io>
+ Date:          06/2016
+ Usage:         Import the module to a bot.
+ Tested on:     Python 3 / OS X 10.11.5
+"""
 
 import os
 import time
@@ -77,3 +84,6 @@ def process(action, input) :
 def ears(words) :
     """Call hear action on each module"""
     return process("hear", words)
+
+def remember(when, where, who, what) :
+    logger.info("%s, %s, %s,\"%s\"" % (when, where, who, what)) 
