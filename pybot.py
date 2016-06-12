@@ -33,9 +33,19 @@ def error(bot, update, error):
     """Error handler function"""
     logger.warn('Update "%s" caused error "%s"' % (update, error))
 
+import brain
+
 def hear(bot, update):
     """Function to handle text messages"""
+    thoughts = brain.ears(update.message.text)
+
     log_message(bot, update)
+    speak(bot, update, thoughts)
+
+def speak(bot, update, thoughts):
+
+    for words in thoughts:
+        bot.sendMessage(update.message.chat_id, text=words)
 
 def log_message(bot, update):
     logger.info(update.update_id)
