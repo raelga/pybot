@@ -48,10 +48,35 @@ def hear(bot, update):
     remember(bot, update)
     speak(bot, update, thoughts)
 
+from urllib.parse import urlparse
+
 def speak(bot, update, thoughts):
-    """Function to handle text messages"""
+    """Function to handle bot responses"""
     for words in thoughts:
-        bot.sendMessage(update.message.chat_id, text=words)
+        if os.path.isfile(words):
+            show(bot, update, words, 'file')
+        elif urlparse(words):
+            show(bot, update, words, 'url')
+        else:
+            bot.sendMessage(update.message.chat_id, text=words)
+
+def show(bot, update, stuff, type):
+    """Function to handle bot responses when he need more than words"""
+    try:
+        if type == 'file':
+            try:
+                thing = open(stuff, 'rb')
+            except:
+                logger.warn("I can't open the %s" % stuff)
+        else:
+            thing = stuff
+
+        if stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
+            bot.sendPhoto(update.message.chat_id, photo=thing)
+
+    except:
+        logger.warn("I can't show the %s" % stuff)         
+        bot.sendMessage(update.message.chat_id, text=stuff)
 
 def remember(bot, update):
     m = update.message
