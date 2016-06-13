@@ -30,6 +30,17 @@ def start(bot, update):
 def help(bot, update):
     bot.sendMessage(update.message.chat_id, text='Help!')
 
+from subprocess import check_output
+from importlib import reload 
+
+def update_yourself(bot, update):
+    
+    output = check_output(["git", "pull"]).decode("utf-8") 
+    reload(brain)
+
+    logger.info(output)
+    bot.sendMessage(update.message.chat_id, text=output)
+
 def escape_markdown(text):
     """Helper function to escape telegram markup symbols"""
     escape_chars = '\*_`\['
@@ -52,6 +63,7 @@ from urllib.parse import urlparse
 
 def speak(bot, update, thoughts):
     """Function to handle bot responses"""
+    logger.info('I\'ve got something to say.')
     for words in thoughts:
         if os.path.isfile(words):
             show(bot, update, words, 'file')
@@ -62,6 +74,7 @@ def speak(bot, update, thoughts):
 
 def show(bot, update, stuff, type):
     """Function to handle bot responses when he need more than words"""
+    logger.info('I\'ve got something to show.')
     try:
         if type == 'file':
             try:
@@ -93,6 +106,7 @@ def main():
     # Command definitions
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("update_yourself", update_yourself))
 
     # log all errors
     dp.add_error_handler(error)
