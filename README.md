@@ -8,9 +8,9 @@ Wrapper for python-telegram-bot to allow dynamic plug-in architecture, an attemp
 
 1. The `brain.py` loads dynamically all the `.py` files in the `./memory` folder each time and try to execute a defined method, for example `hear(message.text)`.
 
-1. Each method in `./memory` returns the response, the `brain.py` sends it to the `pybot.py` and send a message to the user.
+1. Each method in `./memory` returns the response, the `brain.py` sends it to the `pybot.py` and it sends a message to the user.
 
-* As the methods are dynamically loaded, you can edit and add the files in `./memory` without need to restart `pybot.py`
+* As the methods are dynamically loaded, you can edit and add the files in `./memory` without need to restart `pybot.py`, and the will be reloaded on the next message.
 
 ### Install
 
