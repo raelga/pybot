@@ -57,9 +57,9 @@ def hear(bot, update):
     thoughts = brain.ears(update.message.text)
 
     remember(bot, update)
-    speak(bot, update, thoughts)
+    if thoughts: speak(bot, update, thoughts)
 
-from urllib.parse import urlparse
+import requests
 
 def speak(bot, update, thoughts):
     """Function to handle bot responses"""
@@ -67,7 +67,7 @@ def speak(bot, update, thoughts):
     for words in thoughts:
         if os.path.isfile(words):
             show(bot, update, words, 'file')
-        elif urlparse(words):
+        elif words.startswith('http'):
             show(bot, update, words, 'url')
         else:
             bot.sendMessage(update.message.chat_id, text=words)
@@ -81,10 +81,18 @@ def show(bot, update, stuff, type):
                 thing = open(stuff, 'rb')
             except:
                 logger.warn("I can't open the %s" % stuff)
+        elif type == 'url':
+            try:
+                if requests.get(stuff).status_code == 200:
+                    thing = stuff
+                else:
+                    logger.warn("%s is not available." % stuff)
+            except:
+                logger.warn("%s is not a URL." % stuff)
         else:
             thing = stuff
-
-        if stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
+        
+        if thing and stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
             bot.sendPhoto(update.message.chat_id, photo=thing)
 
     except:
