@@ -86,4 +86,5 @@ def ears(words) :
     return process("hear", words)
 
 def remember(when, where, who, what) :
-    logger.info("%s, %s, %s,\"%s\"" % (when, where, who, what)) 
+    """Store messages somewhere."""
+    logger.info("%s, %s, %s,\"%s\";" % (when, where, who, what)) 
