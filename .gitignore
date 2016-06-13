@@ -1,3 +1,6 @@
 export.sh
 __pycache__
+pybot.egg*
+build/
+dist/
 ws/
