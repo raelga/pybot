@@ -6,7 +6,7 @@ Wrapper for python-telegram-bot to allow dynamic plug-in architecture, an attemp
 
 1. `pybot.py` grabs the message from telegram and sends it to the `brain.py`.
 
-1. The `brain.py` loads dynamically all the `.py` files in the `./memory` folder each time and try to execute a defined method, for example `hear(message.text)`.
+1. The `brain.py` loads in runtime all the `.py` files in the `./memory` folder each time and try to execute a defined method, for example `hear(message.text)`.
 
 1. Each method in `./memory` returns the response, the `brain.py` sends it to the `pybot.py` and it sends a message to the user.
 
