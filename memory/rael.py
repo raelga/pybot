@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
- hellp.py       Be polite.
+ rael.py        Pesonal stuff.
  Author:        Rael Garcia <self@rael.io>
  Date:          06/2016
  Tested on:     Python 3 / OS X 10.11.5
