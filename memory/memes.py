@@ -12,6 +12,7 @@ import requests
 import time
 import json
 import re
+import sys
 
 from telegram import Emoji
 from telegram.ext import Updater
@@ -83,3 +84,12 @@ def hear(words):
     if meme:
         logger.info("Generating meme: ")
         return generate_meme(meme)
+
+def main(argv):
+    if len(sys.argv)>1:
+        print(hear(' '.join(sys.argv)))
+    else:
+        print('I heard nothing.')
+
+if __name__ == "__main__":
+    main(sys.argv)
