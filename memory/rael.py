@@ -13,6 +13,10 @@ def hear(words):
     if re.search( r'.*\srael\s.*', words, re.I|re.M):
         return "@raelga"
 
+def hear(words):
+    if re.search( r'.*Are you ok?.*', words, re.I|re.M):
+        return "I'm OK! I'm OK!!"
+
 def main(argv):
     if len(sys.argv)>1:
         print(hear(' '.join(sys.argv)))
