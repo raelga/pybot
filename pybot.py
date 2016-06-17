@@ -3,7 +3,7 @@
  pyboy.py       Telegram bot using python-telegram-bot.
  Author:        Rael Garcia <self@rael.io>
  Date:          06/2016
- Usage:         Export TELEGRAM_TOKEN variable and run the bot. 
+ Usage:         Export TELEGRAM_TOKEN variable and run the bot.
  Tested on:     Python 3 / OS X 10.11.5
 """
 import re
@@ -31,11 +31,11 @@ def help(bot, update):
     bot.sendMessage(update.message.chat_id, text='Help!')
 
 from subprocess import check_output
-from importlib import reload 
+from importlib import reload
 
 def update_yourself(bot, update):
-    
-    output = check_output(["git", "pull"]).decode("utf-8") 
+
+    output = check_output(["git", "pull"]).decode("utf-8")
     reload(brain)
 
     logger.info(output)
@@ -72,6 +72,22 @@ def speak(bot, update, thoughts):
         else:
             bot.sendMessage(update.message.chat_id, text=words)
 
+def list_hardcoded(bot, update):
+
+    rmk = InlineKeyboardMarkup([
+                    [InlineKeyboardButton('Destiny', url='https://telegram.me/joinchat/AzNL9D9wPPKxEnnnnCLyPw')],
+                    [InlineKeyboardButton('Division', url='https://telegram.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q')],
+                    [InlineKeyboardButton('Souls', url='https://telegram.me/joinchat/AzNL9ACpL0yP02kER67Mhg')],
+                    [InlineKeyboardButton('Overwatch', url='https://telegram.me/joinchat/ANSWpD3a-WHTo36pHQt7MA')],
+                    [InlineKeyboardButton('Battlefield', url='https://telegram.me/joinchat/ANSWpDyujaPlYpKeANA3kQ')],
+                    [InlineKeyboardButton('Heartstone', url='https://telegram.me/joinchat/ANSWpD6tVmnd-XNQnjbBNg')],
+                    [InlineKeyboardButton('Uncharted', url='https://telegram.me/joinchat/ANSWpDyujaPlYpKeANA3kQ')],
+                    [InlineKeyboardButton('Game of Thrones', url='https://telegram.me/joinchat/ANSWpD9x8KhVkAwbMnWLw')]
+                   ])
+
+    bot.sendMessage(update.message.chat_id, text="Listado de grupos, pulsa para unirte.", reply_markup=rmk)
+
+
 def show(bot, update, stuff, type):
     """Function to handle bot responses when he need more than words"""
     logger.info('I\'ve got something to show.')
@@ -91,12 +107,12 @@ def show(bot, update, stuff, type):
                 logger.warn("%s is not a URL." % stuff)
         else:
             thing = stuff
-        
+
         if thing and stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
             bot.sendPhoto(update.message.chat_id, photo=thing)
 
     except:
-        logger.warn("I can't show the %s" % stuff)         
+        logger.warn("I can't show the %s" % stuff)
         bot.sendMessage(update.message.chat_id, text=stuff)
 
 def remember(bot, update):
@@ -112,8 +128,7 @@ def main():
     dp.add_handler(MessageHandler([Filters.text], hear))
 
     # Command definitions
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("list", list_hardcoded))
     dp.add_handler(CommandHandler("update_yourself", update_yourself))
 
     # log all errors
