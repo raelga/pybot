@@ -82,8 +82,8 @@ def groups_hardcoded(bot, update):
                     [InlineKeyboardButton('Battlefield', url='https://telegram.me/joinchat/ANSWpDyujaPlYpKeANA3kQ')],
                     [InlineKeyboardButton('Heartstone', url='https://telegram.me/joinchat/ANSWpD6tVmnd-XNQnjbBNg')],
                     [InlineKeyboardButton('Uncharted', url='https://telegram.me/joinchat/ANSWpDyujaPlYpKeANA3kQ')],
-                    [InlineKeyboardButton('Borderlands', url='https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA')]
-                    [InlineKeyboardButton('Game of Thrones', url='https://telegram.me/joinchat/ANSWpD9x8KhVkAwbMnWLw')]
+                    [InlineKeyboardButton('Borderlands', url='https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA')],
+                    [InlineKeyboardButton('Game of Thrones', url='https://telegram.me/joinchat/ANSWpD9x8KhVkAwbMHnWLw')]
                    ])
 
     bot.sendMessage(update.message.chat_id, text="Listado de grupos, pulsa para unirte.", reply_markup=rmk)
