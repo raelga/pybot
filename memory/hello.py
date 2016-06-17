@@ -13,7 +13,7 @@ greetings = ['Buenos días', 'Bon dia', 'Good Morning',
                 'Egun on', 'Morning', 'Buon giorno',
                 'Bonjour', 'Bos días', 'Buenos días arsa',
                 'Hola miarma', 'Goede morgen', 'Bom dia',
-                'Días buenos a ti también'] 
+                'Días buenos a ti también', '\U0001f44b' ]
 
 nights = ['Buenas noches', 'Bona nit', 'Good night',
               'Nanit', 'Gute natch', 'Buonna note',
