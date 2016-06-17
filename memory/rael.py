@@ -10,10 +10,10 @@ import sys
 import random
 
 def hear(words):
-    if re.search( r'.*\srael\s.*', words, re.I|re.M):
+
+    if re.search( r'.*rael\s.*', words, re.I|re.M):
         return "@raelga"
 
-def hear(words):
     if re.search( r'.*Are you ok?.*', words, re.I|re.M):
         return "I'm OK! I'm OK!!"
 
