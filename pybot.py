@@ -116,6 +116,14 @@ def show(bot, update, stuff, type):
         logger.warn("I can't show the %s" % stuff)
         bot.sendMessage(update.message.chat_id, text=stuff)
 
+def view(bot, update):
+    """Function to handle photo messages"""
+    logger.info('I see stuff.')
+    thoughts = brain.eyes(update.message.text)
+
+    remember(bot, update)
+    if thoughts: speak(bot, update, thoughts)
+
 def remember(bot, update):
     m = update.message
     brain.remember(m.date, m.chat_id, m.from_user.id, m.text)
@@ -127,6 +135,7 @@ def main():
 
     # Message handlers
     dp.add_handler(MessageHandler([Filters.text], hear))
+    dp.add_handler(MessageHandler([Filters.photo], view))
 
     # Command definitions
     dp.add_handler(CommandHandler("groups", groups_hardcoded))

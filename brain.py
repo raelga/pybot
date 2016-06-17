@@ -85,6 +85,14 @@ def ears(words) :
     """Call hear action on each module"""
     return process("hear", words)
 
+def eyes(words) :
+    """Call hear action on each module"""
+    return process("see", words)
+
+def choose(words) :
+    """Call choose action on each module"""
+    return process("choose", words)
+
 def remember(when, where, who, what) :
     """Store messages somewhere."""
-    logger.info("%s, %s, %s,\"%s\";" % (when, where, who, what)) 
+    logger.info("%s, %s, %s,\"%s\";" % (when, where, who, what))
