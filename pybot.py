@@ -72,7 +72,7 @@ def speak(bot, update, thoughts):
         else:
             bot.sendMessage(update.message.chat_id, text=words)
 
-def list_hardcoded(bot, update):
+def groups_hardcoded(bot, update):
 
     rmk = InlineKeyboardMarkup([
                     [InlineKeyboardButton('Destiny', url='https://telegram.me/joinchat/AzNL9D9wPPKxEnnnnCLyPw')],
@@ -128,7 +128,7 @@ def main():
     dp.add_handler(MessageHandler([Filters.text], hear))
 
     # Command definitions
-    dp.add_handler(CommandHandler("list", list_hardcoded))
+    dp.add_handler(CommandHandler("groups", groups_hardcoded))
     dp.add_handler(CommandHandler("update_yourself", update_yourself))
 
     # log all errors
