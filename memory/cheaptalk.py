@@ -36,7 +36,7 @@ def see(photo):
     return { 
             1 : random.choice(emojilol) * random.randint(1,3),
             2 : random.choice(textlol),
-            }.get(random.randint(1,6), None)
+            }.get(random.randint(1,4), None)
 
 def hear(words):
     
@@ -45,7 +45,7 @@ def hear(words):
 
     return { 
             1 : random.choice(tellmemore),
-            }.get(random.randint(1,64), None)
+            }.get(random.randinit(1,100), None)
 
 def main(argv):
     if len(sys.argv)>1:
