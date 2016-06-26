@@ -16,7 +16,7 @@ greetings = ['Buenos días', 'Bon dia', 'Good Morning',
                 'Días buenos a ti también', '\U0001f44b' ]
 
 nights = ['Buenas noches', 'Bona nit', 'Good night',
-              'Nanit', 'Gute natch', 'Buonna note',
+              'Nanit', 'Gute Natch', 'Buonna note',
               'Bonne nuit','Goedenacht', 'Boa noite']
 
 def greeting(words):
