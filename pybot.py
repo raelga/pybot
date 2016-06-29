@@ -80,8 +80,8 @@ def groups_hardcoded(bot, update):
                     [InlineKeyboardButton('Souls', url='https://telegram.me/joinchat/AzNL9ACpL0yP02kER67Mhg')],
                     [InlineKeyboardButton('Overwatch', url='https://telegram.me/joinchat/ANSWpD3a-WHTo36pHQt7MA')],
                     [InlineKeyboardButton('Battlefield', url='https://telegram.me/joinchat/ANSWpDyujaPlYpKeANA3kQ')],
-                    [InlineKeyboardButton('Heartstone', url='https://telegram.me/joinchat/ANSWpD6tVmnd-XNQnjbBNg')],
-                    [InlineKeyboardButton('Uncharted', url='https://telegram.me/joinchat/ANSWpDyujaPlYpKeANA3kQ')],
+                    [InlineKeyboardButton('Hearthstone', url='https://telegram.me/joinchat/ANSWpD6tVmnd-XNQnjbBNg')],
+                    [InlineKeyboardButton('Uncharted', url='https://telegram.me/joinchat/ANSWpD-I1yXOHZ00oDk-Cw')],
                     [InlineKeyboardButton('Borderlands', url='https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA')],
                     [InlineKeyboardButton('Game of Thrones', url='https://telegram.me/joinchat/ANSWpD9x8KhVkAwbMHnWLw')]
                    ])
