@@ -17,7 +17,11 @@ emojilol = [
 textlol = [
             'lol',
             '(╯°□°）╯︵ ┻━┻)',
-             'ay k m lol'
+             'ay k m lol',
+             '(♥_♥)',
+             '‎(/.__.)/   \(.__.\)',
+             '( ͡° ͜ʖ ͡°)﻿',
+             '(⋟﹏⋞)'
           ]
 
 tellmemore = [
@@ -36,7 +40,7 @@ def see(photo):
     return { 
             1 : random.choice(emojilol) * random.randint(1,3),
             2 : random.choice(textlol),
-            }.get(random.randint(1,4), None)
+            }.get(random.randint(1,16), None)
 
 def hear(words):
     
