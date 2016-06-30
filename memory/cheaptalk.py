@@ -11,7 +11,8 @@ import random
 
 emojilol = [
             '\U0001f602',
-            '\U0001f602'
+            '\U0001f440',
+            '\U0001f617'
             ]
 
 textlol = [
