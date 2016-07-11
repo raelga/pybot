@@ -78,12 +78,12 @@ def groups_hardcoded(bot, update):
                     [InlineKeyboardButton('Destiny', url='https://telegram.me/joinchat/AzNL9D9wPPKxEnnnnCLyPw')],
                     [InlineKeyboardButton('Division', url='https://telegram.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q')],
                     [InlineKeyboardButton('Souls', url='https://telegram.me/joinchat/AzNL9ACpL0yP02kER67Mhg')],
-                    [InlineKeyboardButton('Overwatch', url='https://telegram.me/joinchat/ANSWpD3a-WHTo36pHQt7MA')],
-                    [InlineKeyboardButton('Battlefield', url='https://telegram.me/joinchat/ANSWpDyujaPlYpKeANA3kQ')],
-                    [InlineKeyboardButton('Hearthstone', url='https://telegram.me/joinchat/ANSWpD6tVmnd-XNQnjbBNg')],
+                    [InlineKeyboardButton('Overwatch', url='https://telegram.me/joinchat/AzNL9D-s8i6n3m8Vbpv16A')],
+                    [InlineKeyboardButton('Battlefield', url='https://telegram.me/joinchat/AzNL9D7Joy94tmkK9DbfTg')],
+                    [InlineKeyboardButton('Hearthstone', url='https://telegram.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g')],
                     [InlineKeyboardButton('Uncharted', url='https://telegram.me/joinchat/ANSWpD-I1yXOHZ00oDk-Cw')],
                     [InlineKeyboardButton('Borderlands', url='https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA')],
-                    [InlineKeyboardButton('Game of Thrones', url='https://telegram.me/joinchat/ANSWpD9x8KhVkAwbMHnWLw')]
+                    [InlineKeyboardButton('Pokémon', url='https://telegram.me/joinchat/AzNL9Ai53f8Td-tXP3pvKA')]
                    ])
 
     bot.sendMessage(update.message.chat_id, text="Listado de grupos, pulsa para unirte.", reply_markup=rmk)
