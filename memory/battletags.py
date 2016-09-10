@@ -12,15 +12,16 @@ import random
 battletags = [
     'Pkts Battlenet ID list',
     '----------------------',
-    'Alucard  => Alucard#21141',
-    'AlNur    => AlNur#2925',
-    'Kaneda   => Berenkaneda#2445',
-    'JackoRS  => JackoRS#2641',
-    'raelga   => raelga#2705',
-    'Efrain   => DarkClaymore#2731',
-    'Nammlock => Nammoth#2134',
-    'Marcotin => marcotin#2318',
-    'Whip1981 => Goliva#2327' ]
+    'Alucard   => Alucard#21141',
+    'AlNur     => AlNur#2925',
+    'Kaneda    => Berenkaneda#2445',
+    'JackoRS   => JackoRS#2641',
+    'raelga    => raelga#2705',
+    'Efrain    => DarkClaymore#2731',
+    'pertusato => pertusato#2947',
+    'Nammlock  => Nammoth#2134',
+    'Marcotin  => marcotin#2318',
+    'Whip1981  => Goliva#2327' ]
 
 def hear(words):
 
