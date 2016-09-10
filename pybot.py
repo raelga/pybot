@@ -72,7 +72,7 @@ def speak(bot, update, thoughts):
         else:
             bot.sendMessage(update.message.chat_id, text=words)
 
-def battlenet_hardcoded(bot, update):
+def battletags_hardcoded(bot, update):
     """Function to handle text messages"""
     thoughts = brain.ears(update.message.text)
 
