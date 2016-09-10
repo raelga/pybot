@@ -10,7 +10,8 @@ import sys
 import random
 
 battletags = [
-    'Pkts Battletags list:',
+    'Pkts Battlenet ID list',
+    '----------------------',
     'Alucard  => Alucard#21141',
     'AlNur    => AlNur#2925',
     'Kaneda   => Berenkaneda#2445',
