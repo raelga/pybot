@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
- rael.py        Battlenet user list.
+ battletags.py  Battlenet user list.
  Author:        Rael Garcia <self@rael.io>
  Date:          0692016
  Tested on:     Python 3 / OS X 10.11.5
