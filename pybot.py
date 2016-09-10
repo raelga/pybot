@@ -72,10 +72,6 @@ def speak(bot, update, thoughts):
         else:
             bot.sendMessage(update.message.chat_id, text=words)
 
-def battletags_hardcoded(bot, update):
-    """Function to handle text messages"""
-    thoughts = brain.ears(update.message.text)
-
 def groups_hardcoded(bot, update):
 
     rmk = InlineKeyboardMarkup([
@@ -144,7 +140,7 @@ def main():
     dp.add_handler(MessageHandler([Filters.photo], view))
 
     # Command definitions
-    dp.add_handler(CommandHandler("battletags", battletags_hardcoded))
+    dp.add_handler(CommandHandler("battletags", hear))
     dp.add_handler(CommandHandler("groups", groups_hardcoded))
     dp.add_handler(CommandHandler("update_yourself", update_yourself))
 
