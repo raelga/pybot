@@ -23,7 +23,7 @@ battletags = [
 
 def hear(words):
 
-    if re.search( r'.*battletags.*', words, re.I|re.M):
+    if re.search( r'^\/battletags.*', words, re.I|re.M):
         return ("\n".join(battletags))
 
 
