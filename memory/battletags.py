@@ -19,7 +19,8 @@ battletags = [
     'raelga   => raelga#2705',
     'Efrain   => DarkClaymore#2731',
     'Nammlock => Nammoth#2134',
-    'Marcotin => marcotin#2318' ]
+    'Marcotin => marcotin#2318',
+    'Whip1981 => Goliva#2327' ]
 
 def hear(words):
 
