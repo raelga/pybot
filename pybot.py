@@ -75,15 +75,17 @@ def speak(bot, update, thoughts):
 def groups_hardcoded(bot, update):
 
     rmk = InlineKeyboardMarkup([
-                    [InlineKeyboardButton('Destiny', url='https://telegram.me/joinchat/AzNL9D9wPPKxEnnnnCLyPw')],
+                    [InlineKeyboardButton('Súper Destiny', url='https://telegram.me/pkts_destiny')],
+                    [InlineKeyboardButton('Destiny 1.kk', url='https://telegram.me/joinchat/AzNL9D9wPPKxEnnnnCLyPw')],
+                    [InlineKeyboardButton('No man\'s sky', url='https://telegram.me/joinchat/AzNL9EAy0gzR3etQ_Q4JSw')],
                     [InlineKeyboardButton('Division', url='https://telegram.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q')],
                     [InlineKeyboardButton('Souls', url='https://telegram.me/joinchat/AzNL9ACpL0yP02kER67Mhg')],
                     [InlineKeyboardButton('Overwatch', url='https://telegram.me/joinchat/AzNL9D-s8i6n3m8Vbpv16A')],
                     [InlineKeyboardButton('Battlefield', url='https://telegram.me/joinchat/AzNL9D7Joy94tmkK9DbfTg')],
                     [InlineKeyboardButton('Hearthstone', url='https://telegram.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g')],
-                    [InlineKeyboardButton('Uncharted', url='https://telegram.me/joinchat/ANSWpD-I1yXOHZ00oDk-Cw')],
                     [InlineKeyboardButton('Borderlands', url='https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA')],
-                    [InlineKeyboardButton('Pokémon', url='https://telegram.me/joinchat/AzNL9Ai53f8Td-tXP3pvKA')]
+                    [InlineKeyboardButton('Pokémon', url='https://telegram.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg')],
+                    [InlineKeyboardButton('Súper Miscelánea', url='https://telegram.me/joinchat/AzNL9D742ENZ-5e7i1n_aw')]
                    ])
 
     bot.sendMessage(update.message.chat_id, text="Listado de grupos, pulsa para unirte.", reply_markup=rmk)
