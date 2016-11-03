@@ -11,7 +11,7 @@ import random
 
 def hear(words):
 
-    if re.search( r'.*rael\s.*', words, re.I|re.M):
+    if re.search( r'(^|.*)rael(.*|$)', words, re.I|re.M):
         return "@raelga"
 
     if re.search( r'.*Are you ok?.*', words, re.I|re.M):
