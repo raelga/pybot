@@ -21,7 +21,8 @@ battletags = [
     'pertusato => pertusato#2947',
     'Nammlock  => Nammoth#2134',
     'Marcotin  => marcotin#2318',
-    'Whip1981  => Goliva#2327' ]
+    'Whip1981  => Goliva#2327',
+    'Sysvalve  => Sysvalve#TBD', ]
 
 def hear(words):
 
