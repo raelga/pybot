@@ -85,7 +85,8 @@ def groups_hardcoded(bot, update):
                     [InlineKeyboardButton('Hearthstone', url='https://telegram.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g')],
                     [InlineKeyboardButton('Borderlands', url='https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA')],
                     [InlineKeyboardButton('Pokémon', url='https://telegram.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg')],
-                    [InlineKeyboardButton('Miscelánea', url='https://telegram.me/miscelanea')]
+                    [InlineKeyboardButton('Miscelánea', url='https://telegram.me/miscelanea')],
+                    [InlineKeyboardButton('Final Fantasy', url='https://telegram.me/joinchat/AzNL9D_0xS_0h6Q3H5m69Q')],
                    ])
 
     bot.sendMessage(update.message.chat_id, text="Listado de grupos, pulsa para unirte.", reply_markup=rmk)
