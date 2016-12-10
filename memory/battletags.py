@@ -12,7 +12,7 @@ import random
 battletags = [
     'Pkts Battlenet / PSN ID list',
     '----------------------------',
-    'Alberto   => ###| Alasworld',
+    'Alberto   => alasworld#2665 | Alasworld',
     'Alfonso   => ### | Narcolepsy__',
     'Alex      => Alucard#21141 | Al-ucard',
     'Andrés    => ### | Zariton',
