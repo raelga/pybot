@@ -7,6 +7,7 @@
  Tested on:     Python 3 / OS X 10.11.5
 """
 import re
+import random
 import os
 
 from telegram import InlineQueryResultArticle, ForceReply, \
@@ -59,6 +60,11 @@ def hear(bot, update):
     remember(bot, update)
     if thoughts: speak(bot, update, thoughts)
 
+    m = update.message
+
+    if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 51267720 ):
+        bot.sendDocument(m.chat_id, document="http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif")
+
 import requests
 
 def speak(bot, update, thoughts):
@@ -79,13 +85,13 @@ def groups_hardcoded(bot, update):
                     [InlineKeyboardButton('Overwatch', url='https://telegram.me/pkts_overwatch')],
                     [InlineKeyboardButton('Battlefield', url='https://telegram.me/pkts_battlefield')],
                     [InlineKeyboardButton('Final Fantasy', url='https://telegram.me/joinchat/AzNL9D_0xS_0h6Q3H5m69Q')],
+                    [InlineKeyboardButton('Grand Theft Auto', url='https://telegram.me/joinchat/AzNL9ECAaKh4y3za3egFbw')],
                     [InlineKeyboardButton('Space Exploration', url='https://telegram.me/joinchat/AzNL9EAy0gzR3etQ_Q4JSw')],
                     [InlineKeyboardButton('Division', url='https://telegram.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q')],
                     [InlineKeyboardButton('Souls', url='https://telegram.me/joinchat/AzNL9ACpL0yP02kER67Mhg')],
                     [InlineKeyboardButton('Borlderlands', url='https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA')],
                     [InlineKeyboardButton('Hearthstone', url='https://telegram.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g')],
                     [InlineKeyboardButton('PC Master Race', url='https://telegram.me/joinchat/AzNL9EFBO0e81gXlECiRzA')],
-                    [InlineKeyboardButton('Miscelánea', url='https://telegram.me/miscelanea')]
                     [InlineKeyboardButton('Pokémon', url='https://telegram.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg')],
                     [InlineKeyboardButton('Miscelánea', url='https://telegram.me/miscelanea')],
                    ])
@@ -127,6 +133,10 @@ def view(bot, update):
 
     remember(bot, update)
     if thoughts: speak(bot, update, thoughts)
+
+    m = update.message
+    if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 51267720 ):
+        bot.sendDocument(m.chat_id, document="http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif")
 
 def remember(bot, update):
     m = update.message
