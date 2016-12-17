@@ -63,7 +63,12 @@ def hear(bot, update):
     m = update.message
 
     if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 51267720 ):
-        bot.sendDocument(m.chat_id, document="http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif")
+        if re.search( r'(^|\s)g[a-zA-Z0-9]t.', m.text, re.I|re.M):
+            show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
+
+    if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 53693428 ):
+        if re.search( r'(^|\s)g[a-zA-Z0-9]t.', m.text, re.I|re.M):
+            show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
 
 import requests
 
@@ -104,23 +109,19 @@ def show(bot, update, stuff, type):
     logger.info('I\'ve got something to show.')
     try:
         if type == 'file':
-            try:
-                thing = open(stuff, 'rb')
-            except:
-                logger.warn("I can't open the %s" % stuff)
+            thing = open(stuff, 'rb')
         elif type == 'url':
-            try:
-                if requests.get(stuff).status_code == 200:
-                    thing = stuff
-                else:
-                    logger.warn("%s is not available." % stuff)
-            except:
-                logger.warn("%s is not a URL." % stuff)
+            if requests.get(stuff).status_code == 200:
+                thing = stuff
+            else:
+                logger.warn("%s is not available." % stuff)
         else:
             thing = stuff
 
         if thing and stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
             bot.sendPhoto(update.message.chat_id, photo=thing)
+        elif thing:
+            bot.sendDocument(update.message.chat_id, document=thing)
 
     except:
         logger.warn("I can't show the %s" % stuff)
@@ -134,9 +135,18 @@ def view(bot, update):
     remember(bot, update)
     if thoughts: speak(bot, update, thoughts)
 
-    m = update.message
-    if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 51267720 ):
-        bot.sendDocument(m.chat_id, document="http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif")
+def event_response(bot, update):
+    """Function to handle text messages"""
+    if update.message.new_chat_member is not None:
+        logger.info('New member')
+        thoughts = brain.respond(update.message.text, 'salute')
+
+    if update.message.left_chat_member is not None:
+        logger.info('Member left')
+        thoughts = brain.respond(update.message.text, 'farewell')
+
+    remember(bot, update)
+    if thoughts is not None: speak(bot, update, thoughts)
 
 def remember(bot, update):
     m = update.message
@@ -150,6 +160,7 @@ def main():
     # Message handlers
     dp.add_handler(MessageHandler([Filters.text], hear))
     dp.add_handler(MessageHandler([Filters.photo], view))
+    dp.add_handler(MessageHandler([Filters.status_update], event_response))
 
     # Command definitions
     dp.add_handler(CommandHandler("battletags", hear))
