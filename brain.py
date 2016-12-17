@@ -89,6 +89,10 @@ def eyes(words) :
     """Call hear action on each module"""
     return process("see", words)
 
+def respond(words, stimulus):
+    """Call hear action on each module"""
+    return process(stimulus, words)
+
 def choose(words) :
     """Call choose action on each module"""
     return process("choose", words)
