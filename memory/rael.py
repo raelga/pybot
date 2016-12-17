@@ -17,9 +17,6 @@ def hear(words):
     if re.search( r'.*Are you ok?.*', words, re.I|re.M):
         return "I'm OK! I'm OK!!"
 
-    if re.search( r'(^|\s)pablo(\s|$)', words, re.I|re.M):
-        return "Hola @pablo"
-
 def main(argv):
     if len(sys.argv)>1:
         print(hear(' '.join(sys.argv)))
