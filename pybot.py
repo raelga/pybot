@@ -63,11 +63,21 @@ def hear(bot, update):
     m = update.message
 
     if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 51267720 ):
-        if re.search( r'(^|\s)g[a-zA-Z0-9]t.', m.text, re.I|re.M):
+        if re.search( r'(^|\s)g[aA0-9]t.', m.text, re.I|re.M):
+            show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
+        if re.search( r'\\U0001F63[8-9A-F]', m.text, re.I|re.M):
+            show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
+        if re.search( r'(🐈|🐱|😺|😸|😹|😻|😼|😽|🙀|😿|😾)', m.text, re.I|re.M):
             show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
 
-    if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 53693428 ):
+
+    #if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 53693428 ):
+    if ( m.from_user.id == 53693428 ):
         if re.search( r'(^|\s)g[a-zA-Z0-9]t.', m.text, re.I|re.M):
+            show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
+        if re.search( r'\\U0001F63[8-9A-F]', m.text, re.I|re.M):
+            show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
+        if re.search( r'(🐈|🐱|😺|😸|😹|😻|😼|😽|🙀|😿|😾)', m.text, re.I|re.M):
             show(bot, update, "http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + str(random.random()) + ".gif", 'url')
 
 import requests
