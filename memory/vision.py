@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
- cheaptalk.py   Cheap talk, random responses to random input.
+ cheaptalk.py   Vision, obtain a list of tags from an image.
  Author:        Rael Garcia <self@rael.io>
- Date:          06/2016
+ Date:          12/2016
  Tested on:     Python 3 / OS X 10.11.5
 """
 # [START import_libraries]
@@ -68,8 +68,8 @@ def process(photo_file):
                     for attr in item:
                         label = attr['description']
                         score = attr['score']
-                        res = res + ("%s [%.2f] " % (label, score))
-                    res = "Cosas que veo: " + res
+                        res = res + (" %s [%.2f] " % (label, score))
+                    res = "-" + res
 
                 if itemid == 'safeSearchAnnotation':
                     for attr in item:
@@ -77,12 +77,10 @@ def process(photo_file):
                         likely = item[attr]
                         print("%s - %s" % (safety, likely))
                         if safety == 'adult':
-                            if likely == 'POSSIBLE':
-                                res = 'Eso puede ser porno 🤔 ' + res
-                            elif likely == 'LIKELY':
-                                res = 'Eso tiene toda la pinta de ser porno.' + res
+                            if likely == 'LIKELY':
+                                res = res + '\nEso puede ser porno 🤔'
                             elif likely == 'VERY_LIKELY':
-                                res = '@raelga!! PORNO!!!😱😱😱  ' + res
+                                res = res + '\n@raelga!! PORNO!!!😱😱😱'
 
         return(res)
         # [END parse_response]
