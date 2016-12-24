@@ -78,7 +78,7 @@ def process(photo_file):
                         print("%s - %s" % (safety, likely))
                         if safety == 'adult':
                             if likely == 'LIKELY':
-                                res = res + '\nEso puede ser porno 🤔'
+                                res = res + '\n🤔 Eso tiene toda la pinta de ser porno @raelga?'
                             elif likely == 'VERY_LIKELY':
                                 res = res + '\n@raelga!! PORNO!!!😱😱😱'
 
