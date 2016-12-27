@@ -68,8 +68,8 @@ def process(photo_file):
                     for attr in item:
                         label = attr['description']
                         score = attr['score']
-                        res = res + ("- %s [%.2f]\n" % (label, score))
-                    res = res + "\n"
+                        #res = res + ("- %s [%.2f]\n" % (label, score))
+                    #res = res + "\n"
 
                 if itemid == 'safeSearchAnnotation':
                     for attr in item:
