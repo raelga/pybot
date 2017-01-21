@@ -128,8 +128,7 @@ def show(bot, update, stuff, type):
 
 def view(bot, update):
     """Function to handle photo messages"""
-    logger.info('I see stuff.')
-    thoughts = brain.eyes(update.message.text)
+    thoughts = brain.eyes(bot.getFile(update.message.photo[-1].file_id).file_path)
 
     remember(bot, update)
     if thoughts: speak(bot, update, thoughts)
@@ -164,6 +163,7 @@ def main():
     # Command definitions
     dp.add_handler(CommandHandler("battletags", hear))
     dp.add_handler(CommandHandler("groups", groups_hardcoded))
+    dp.add_handler(CommandHandler("trophies", hear))
     dp.add_handler(CommandHandler("update_yourself", update_yourself))
 
     # log all errors
