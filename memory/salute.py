@@ -12,11 +12,11 @@ import random
 
 def salute(words):
 
-    return "ola k ase"
- 
+    return "👋"
+
 def farewell(words):
 
-    return "talue"
+    return "👋👋"
 
 def main(argv):
     if len(sys.argv)>1:
