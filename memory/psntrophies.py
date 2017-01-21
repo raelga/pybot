@@ -36,7 +36,7 @@ def psntrophies(psnid):
     return (summary + "\n\n" + info)
 
 def hear(words):
-    data = re.search( r'(^|.*)trophies ([A-Za-z0-9]+).*', words, re.I|re.M)
+    data = re.search( r'(^|.*)trophies ([A-Za-z0-9_-]+).*', words, re.I|re.M)
     if data: return psntrophies(data.groups()[1])
 
 def main(argv):
