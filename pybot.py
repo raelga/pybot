@@ -146,6 +146,83 @@ def event_response(bot, update):
     remember(bot, update)
     if thoughts is not None: speak(bot, update, thoughts)
 
+def dynmenu(bot, update):
+    """Function to print a dynamic menu"""
+    keyboard = []
+    keyboard.append([])
+    values = brain.menu(update.message.from_user.id) #Read the main menu
+    i=0
+    c=0
+    for row in values: #Build the menu
+        keyboard[i].append(InlineKeyboardButton(row[0], callback_data=row[1]))
+        c=c+1
+        if c != 0 and c % 3==0 and row != values[-1]: #Modify c % 3 by c % number of columns per line to print
+            i=i+1
+            keyboard.append([])
+
+    keyboard.append([InlineKeyboardButton("<- Salir", callback_data='exit')])
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    r=bot.sendMessage(update.message.chat_id, text='<b>Menú de opciones:</b>',parse_mode=ParseMode.HTML, reply_markup=reply_markup)
+
+    #brain.menu_control('create', update.message.from_user.id, update.message.chat_id, r.message_id)  #Give the control of menu to owner
+
+
+def button(bot, update):
+    """Function to edit the dynamic menu by push buttons of it"""
+    query = update.callback_query
+    #check = brain.menu_control('check', query.from_user.id, query.message.chat_id, query.message.message_id)  #Give the control of menu to owner
+    #if check > 0:
+    
+    if query.data=='exit':
+        bot.editMessageText(text='Cancelado', chat_id=query.message.chat_id, message_id=query.message.message_id)
+    elif query.data=='home':
+        keyboard = []
+        keyboard.append([])
+        values = brain.menu(query.from_user.id)
+        i=0
+        c=0
+        for row in values: #Build the submenu
+            keyboard[i].append(InlineKeyboardButton(row[0], callback_data=row[1]))
+            c=c+1
+            if c != 0 and c % 3==0 and row != values[-1]: #Modify c % 3 by c % number of columns per line to print
+                i=i+1
+                keyboard.append([])
+
+        keyboard.append([InlineKeyboardButton("<- Salir", callback_data='exit')])
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        bot.editMessageText('<b>Menú de opciones:</b>', parse_mode=ParseMode.HTML, reply_markup=reply_markup, chat_id=query.message.chat_id, message_id=query.message.message_id)
+    elif re.search(r'^_.*', query.data):
+        keyboard = []
+        keyboard.append([])
+        values = brain.submenu(query.data, query.from_user.id)
+        i=0
+        c=0
+        for row in values: #Build the submenu
+            if re.search(r'^http:|https:.*', row[1]):
+                keyboard[i].append(InlineKeyboardButton(row[0], url=row[1]))
+            else:
+                keyboard[i].append(InlineKeyboardButton(row[0], callback_data=row[1]))
+            c=c+1
+            if c != 0 and c % 3==0 and row != values[-1]: #Modify c % 3 by c % number of columns per line to print
+                i=i+1
+                keyboard.append([])
+
+        keyboard.append([InlineKeyboardButton("<< Atrás", callback_data='home')])
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+				
+        bot.editMessageText(text='<b>Menú de opciones:</b>',parse_mode=ParseMode.HTML, reply_markup=reply_markup,
+								chat_id=query.message.chat_id,
+								message_id=query.message.message_id)
+    else:
+        thoughts = brain.ears(query.data)
+        if thoughts: speak(bot, query, thoughts)
+
+
 def remember(bot, update):
     m = update.message
     brain.remember(m.date, m.chat_id, m.from_user.id, m.text)
@@ -165,6 +242,8 @@ def main():
     dp.add_handler(CommandHandler("groups", groups_hardcoded))
     dp.add_handler(CommandHandler("trophies", hear))
     dp.add_handler(CommandHandler("update_yourself", update_yourself))
+    dp.add_handler(CommandHandler('menu', dynmenu))
+    dp.add_handler(CallbackQueryHandler(button))
 
     # log all errors
     dp.add_error_handler(error)
