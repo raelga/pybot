@@ -220,7 +220,7 @@ def main():
 
     # Command definitions
     dp.add_handler(CommandHandler("battletags", hear))
-    dp.add_handler(CommandHandler("groups", groups_hardcoded))
+    dp.add_handler(CommandHandler("groups", tg_menu))
     dp.add_handler(CommandHandler("trophies", hear))
     dp.add_handler(CommandHandler("update_yourself", update_yourself))
     dp.add_handler(CommandHandler('menu', tg_menu))
