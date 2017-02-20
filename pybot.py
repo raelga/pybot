@@ -157,7 +157,7 @@ def tg_menu(bot, update):
     menu = tg_arrayToMenu(data, columns = 3)
 
     return bot.sendMessage(update.message.chat_id, \
-                            text='<b>Choose</b>',\
+                            text='Select',\
                             parse_mode=ParseMode.HTML,\
                             reply_markup=menu)
 
@@ -183,7 +183,7 @@ def tg_callback_handler(bot, update):
 
     if query.data=='exit':
 
-        tg_editMessage(bot, query.message, 'Done!')
+        tg_editMessage(bot, query.message, '🙊')
 
     elif query.data=='home':
 
