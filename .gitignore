@@ -4,3 +4,5 @@ pybot.egg*
 build/
 dist/
 ws/
+google.auth
+.ropeproject
