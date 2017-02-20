@@ -62,7 +62,7 @@ def thougth(working_memory, knowledge, action, input):
 
 def process(action, input) :
     """Execute the action on each module"""
-    
+
     thoughts = list()
     working_memory = queue.Queue()
 
@@ -99,29 +99,30 @@ def choose(words) :
 
 def menu(who) :
     """Print main menu"""
-    menu=[["Grupos", '_groups'], 
-          ["PSN", '_psn'], 
-          ["Battletags", '/batlletags']]
+    menu=[["Grupos", '_groups'],
+          ["Battletags", '_battletags']]
     return(menu)
-	
+
 def submenu(words, who) :
     """Print different submenus"""
     if words == '_groups':
-        submenu=[['Destiny', 'https://telegram.me/pkts_destiny\''],
-                    ['Overwatch', 'https://telegram.me/pkts_overwatch\''],
-                    ['Battlefield', 'https://telegram.me/pkts_battlefield\''],
-                    ['Final Fantasy', 'https://telegram.me/joinchat/AzNL9D_0xS_0h6Q3H5m69Q\''],
-                    ['Grand Theft Auto', 'https://telegram.me/joinchat/AzNL9ECAaKh4y3za3egFbw\''],
-                    ['Space Exploration', 'https://telegram.me/joinchat/AzNL9EAy0gzR3etQ_Q4JSw\''],
-                    ['Division', 'https://telegram.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q\''],
-                    ['Souls', 'https://telegram.me/joinchat/AzNL9ACpL0yP02kER67Mhg\''],
-                    ['Borlderlands', 'https://telegram.me/joinchat/AzNL9AD3n5pKH_6e1trOZA\''],
-                    ['Hearthstone', 'https://telegram.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g\''],
-                    ['PC Master Race', 'https://telegram.me/joinchat/AzNL9EFBO0e81gXlECiRzA\''],
-                    ['PokÃ©mon', 'https://telegram.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg\''],
-                    ['MiscelÃ¡nea', 'https://telegram.me/miscelanea\'']]
+        submenu = [
+            ['Destiny', 'https://t.me/pkts_destiny'],
+            ['Overwatch', 'https://t.me/pkts_overwatch'],
+            ['Battlefield', 'https://t.me/pkts_battlefield'],
+            ['Final Fantasy', 'https://t.me/joinchat/AzNL9D_0xS_0h6Q3H5m69Q'],
+            ['GTA', 'https://t.me/joinchat/AzNL9ECAaKh4y3za3egFbw'],
+            ['Space', 'https://t.me/joinchat/AzNL9EAy0gzR3etQ_Q4JSw'],
+            ['Division', 'https://t.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q'],
+            ['Souls', 'https://t.me/joinchat/AzNL9ACpL0yP02kER67Mhg'],
+            ['Borlderlands', 'https://t.me/joinchat/AzNL9AD3n5pKH_6e1trOZA'],
+            ['Hearthstone', 'https://t.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g'],
+            ['PC Master Race', 'https://t.me/joinchat/AzNL9EFBO0e81gXlECiRzA'],
+            ['Pokémon', 'https://t.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg'],
+            ['Miscelánea', 'https://t.me/miscelanea'],
+        ]
     else:
-        submenu=[["Sin opciones", 'nothing']]
+        submenu=[["Not implemented (yet)", 'home']]
 
     return(submenu)
 
