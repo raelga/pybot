@@ -157,7 +157,7 @@ def tg_menu(bot, update):
     menu = tg_arrayToMenu(data, columns = 3)
 
     return bot.sendMessage(update.message.chat_id, \
-                            text='Select',\
+                            text='Pulsa para desplegar',\
                             parse_mode=ParseMode.HTML,\
                             reply_markup=menu)
 
