@@ -6,3 +6,4 @@ dist/
 ws/
 google.auth
 .ropeproject
+*log
