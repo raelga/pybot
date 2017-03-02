@@ -95,7 +95,7 @@ def respond(words, stimulus):
 
 def choose(words) :
     """Call choose action on each module"""
-    return process("choose", words)
+    return process("Pulsa para desplegar", words)
 
 def menu(who) :
     """Print main menu"""
@@ -107,6 +107,7 @@ def submenu(words, who) :
     """Print different submenus"""
     if words == '_groups':
         submenu = [
+            ['Horizon Zero Dawn', 'https://t.me/joinchat/AAAAAD-16s4VNcRaBxREnA'],
             ['Destiny', 'https://t.me/pkts_destiny'],
             ['Overwatch', 'https://t.me/pkts_overwatch'],
             ['Battlefield', 'https://t.me/pkts_battlefield'],
