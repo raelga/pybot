@@ -116,7 +116,7 @@ def submenu(words, who) :
             ['Space', 'https://t.me/joinchat/AzNL9EAy0gzR3etQ_Q4JSw'],
             ['Division', 'https://t.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q'],
             ['Souls', 'https://t.me/joinchat/AzNL9ACpL0yP02kER67Mhg'],
-            ['Borlderlands', 'https://t.me/joinchat/AzNL9AD3n5pKH_6e1trOZA'],
+            ['Borderlands', 'https://t.me/joinchat/AzNL9AD3n5pKH_6e1trOZA'],
             ['Hearthstone', 'https://t.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g'],
             ['PC Master Race', 'https://t.me/joinchat/AzNL9EFBO0e81gXlECiRzA'],
             ['Pokémon', 'https://t.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg'],
