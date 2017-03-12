@@ -120,6 +120,8 @@ def submenu(words, who) :
             ['Hearthstone', 'https://t.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g'],
             ['PC Master Race', 'https://t.me/joinchat/AzNL9EFBO0e81gXlECiRzA'],
             ['Pokémon', 'https://t.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg'],
+            ['Nintendo', 'https://t.me/joinchat/AAAAAEE4x5M1gaboANV6aw'],
+            ['StarWars', 'https://t.me/joinchat/AAAAAEBbCjW8vueDkXwFyQ'],
             ['Miscelánea', 'https://t.me/miscelanea'],
         ]
     else:
