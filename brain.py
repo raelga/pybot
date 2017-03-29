@@ -109,6 +109,7 @@ def submenu(words, who) :
         submenu = [
             ['Horizon Zero Dawn', 'https://t.me/joinchat/AAAAAD-16s4VNcRaBxREnA'],
             ['Destiny', 'https://t.me/pkts_destiny'],
+            ['Wildlands', 'https://t.me/joinchat/AAAAAD_ilo8nKdhZdQLm9Q'],
             ['Overwatch', 'https://t.me/pkts_overwatch'],
             ['Battlefield', 'https://t.me/pkts_battlefield'],
             ['Final Fantasy', 'https://t.me/joinchat/AzNL9D_0xS_0h6Q3H5m69Q'],
