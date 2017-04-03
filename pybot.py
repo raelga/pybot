@@ -63,7 +63,7 @@ def hear(bot, update):
     m = update.message
 
     #if ( m.chat_id == -1001056495683 ) and ( m.from_user.id == 53693428 ):
-    if ( m.from_user.id == 53693428 ):
+    if ( m.from_user.id == 53693428 ) or ( m.from_user.id == 13932196 ) or ( m.from_user.id == 329350632 ):
         if re.search( r'(^|\s)g[aA0-9]t.', m.text, re.I|re.M) \
           or re.search( r'\\U0001F63[8-9A-F]', m.text, re.I|re.M) \
           or re.search( r'(🐈|🐱|😺|😸|😹|😻|😼|😽|🙀|😿|😾)', m.text, re.I|re.M):
