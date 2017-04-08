@@ -1,92 +1,135 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+ raids.py       Simple fireteam scheduler.
+ Author:        David @davlopgom
+ Date:          04/2017
+ Tested on:     Python 3 / OS X 10.11.5
+"""
+
+from __future__ import print_function
+
 import datetime
 import os
 import sys
 import re
 
-init_path = './memory/__raids__/'
-hours = ['10:00','16:00','20:00','22:30']
-difficulties = ['hard']
+FILES_PATH = os.path.dirname(__file__) + "/__raids__"
 
-date = datetime.datetime.today()
-next_init = date + datetime.timedelta(days=(8 - date.weekday()))
-next_end = next_init + datetime.timedelta(days=6)
-current_end = date + datetime.timedelta(days=(7 - date.weekday()))
-current_init = current_end - datetime.timedelta(days=6)
+HOURS = ['10:00', '16:00', '20:00', '22:30']
+LEVEL = ['hard']
+
+TODAY = datetime.datetime.today()
+NEXT_INI = TODAY + datetime.timedelta(days=(8 - TODAY.weekday()))
+NEXT_END = NEXT_INI + datetime.timedelta(days=6)
+CURR_END = TODAY + datetime.timedelta(days=(7 - TODAY.weekday()))
+CURR_INI = CURR_END - datetime.timedelta(days=6)
 
 
-def format_date(date):
-    date=date.strftime("%d-%m-%y")
-    return date
+def format_date(day):
+    "Returns a TODAY formated"
+
+    return day.strftime("%d-%m-%y")
+
 
 def week_file(day):
-    r = day.split('-')
-    d = datetime.datetime(int(r[2]), int(r[1]), int(r[0]))
-    now_wd = date.weekday()
-    req_wd = d.weekday()
+    "Returns the data file for the day"
+
+    day_arr = day.split('-')
+    day = datetime.datetime(
+        int(day_arr[2]), int(day_arr[1]), int(day_arr[0]))
+    now_wd = TODAY.weekday()
+    req_wd = day.weekday()
+
     week = ''
-    if (now_wd == 1) or (now_wd == 0 and req_wd == 0) or (now_wd >= 2 and req_wd >= now_wd):
+    if (now_wd == 1) or (now_wd == 0 and req_wd == 0) \
+            or (now_wd >= 2 and req_wd >= now_wd):
         week = 'current'
     else:
         week = 'next'
 
     if week == 'current':
-        p = init_path+'Destiny_'+format_date(current_init)+'_'+format_date(current_end)+'.txt'
+        file_path = FILES_PATH + '/Destiny_' + \
+            format_date(CURR_INI) + '_' + format_date(CURR_END) + '.txt'
     if week == 'next':
-        p = init_path+'Destiny_'+format_date(next_init)+'_'+format_date(next_end)+'.txt'
-    return(p)
+        file_path = FILES_PATH + '/Destiny_' + \
+            format_date(NEXT_INI) + '_' + format_date(NEXT_END) + '.txt'
+
+    return file_path
+
 
 def convert_date(day):
+    "Returns TODAY based on the day"
+
     iday = None
     if day.lower() == 'lunes':
-        iday=int('0')
+        iday = int('0')
     elif day.lower() == 'martes':
-        iday=int('1')
+        iday = int('1')
     elif day.lower() == 'miercoles' or day.lower() == 'miércoles':
-        iday=int('2')
+        iday = int('2')
     elif day.lower() == 'jueves':
-        iday=int('3')
+        iday = int('3')
     elif day.lower() == 'viernes':
-        iday=int('4')
+        iday = int('4')
     elif day.lower() == 'sabado' or day.lower() == 'sábado':
-        iday=int('5')
+        iday = int('5')
     elif day.lower() == 'domingo':
-        iday=int('6')
+        iday = int('6')
     elif day.lower() == 'hoy':
-        iday=date.weekday()
+        iday = TODAY.weekday()
     elif day.lower() == 'mañana':
-        iday=date.weekday()+1
+        iday = TODAY.weekday() + 1
 
     if iday:
-        day = date + datetime.timedelta(days=(iday - date.weekday()))
-        return(format_date(day))
+        day = TODAY + datetime.timedelta(days=(iday - TODAY.weekday()))
+        return format_date(day)
     else:
-        return(day)
+        return day
 
-def create_file(m, p):
-    if m == 'current':
-        first_day = current_init
-    elif m == 'next':
-        first_day = next_init
-    with open(p, 'w') as f:
+
+def create_file(kind, datafile):
+    "Create a new file"
+
+    if kind == 'current':
+        first_day = CURR_INI
+    elif kind == 'next':
+        first_day = NEXT_INI
+
+    with open(datafile, 'w') as datafile:
         for i in range(7):
-            print(format_date(first_day + datetime.timedelta(days=i))+'\n', file=f)
-            for difficulty in difficulties:
-                print(difficulty+'\n', file=f)
-                for hour in hours:
-                    print(hour+'\n', file=f)
+            day = format_date(first_day + datetime.timedelta(days=i))
+            datafile.write(day + '\n')
+            for difficulty in LEVEL:
+                datafile.write(difficulty + '\n')
+                for hour in HOURS:
+                    datafile.write(hour + '\n')
+
 
 def new_week():
-    c = init_path+'Destiny_'+format_date(current_init)+'_'+format_date(current_end)+'.txt'
-    if not os.path.isfile(c):
-        create_file('current',c)
-    n = init_path+'Destiny_'+format_date(next_init)+'_'+format_date(next_end)+'.txt'
-    if os.path.isfile(n):
-        return('Ya se han creado convocatorias para la siguiente semana.')
-    else:
-        create_file('next',n)
-        return('Convocatorias creadas!!')
+    "Create new week file"
 
-def see_raid(day, difficulty, hour):
+    if not os.path.exists(FILES_PATH):
+        os.makedirs(FILES_PATH)
+
+    current = FILES_PATH + '/Destiny_' + \
+        format_date(CURR_INI) + '_' + format_date(CURR_END) + '.txt'
+
+    if not os.path.isfile(current):
+        create_file('current', current)
+
+    new_conv = FILES_PATH + '/Destiny_' + \
+        format_date(NEXT_INI) + '_' + format_date(NEXT_END) + '.txt'
+
+    if os.path.isfile(new_conv):
+        return 'Ya se han creado convocatorias para la siguiente semana.'
+    else:
+        create_file('next', new_conv)
+        return 'Convocatorias creadas!!'
+
+
+def view_conv(day, difficulty, hour):
+    "View the fireteams"
     day_point = None
     diff_point = None
     hour_point = None
@@ -94,12 +137,12 @@ def see_raid(day, difficulty, hour):
 
     if day:
         day = convert_date(day)
-        p = week_file(day)
+        datafile = week_file(day)
 
-        with open(p, 'r') as fr:
-            get_all = fr.readlines()
-        
-        for i,line in enumerate(get_all):
+        with open(datafile, 'r') as datafile:
+            get_all = datafile.readlines()
+
+        for i, line in enumerate(get_all):
             if day.lower() in line.lower():
                 day_point = i
             elif day_point and difficulty.lower() in line.lower():
@@ -109,16 +152,16 @@ def see_raid(day, difficulty, hour):
                 hour_point = i
                 diff_point = None
             elif hour_point:
-                r = re.search(r'^(\d).', line, re.I)
-                if r:
+                hour = re.search(r'^(\d).', line, re.I)
+                if hour:
                     hour_point = i
                 else:
                     hour_point = None
-            elif re.search( r'^\d\d-\d\d-\d\d', line, re.I):
+            elif re.search(r'^\d\d-\d\d-\d\d', line, re.I):
                 day_point = None
                 diff_point = None
                 hour_point = None
- 
+
             if day_point:
                 result.append(line)
             elif diff_point:
@@ -127,15 +170,18 @@ def see_raid(day, difficulty, hour):
                 result.append(line)
 
         if result:
-            return(''.join(result))
+            return ''.join(result)
         else:
-            return('No se ha encontrado esa convocatoria.')
-                    
+            return 'No se ha encontrado esa convocatoria.'
+
     else:
-        c = init_path+'Destiny_'+format_date(current_init)+'_'+format_date(current_end)+'.txt'
-        return(c)
+        current_file = FILES_PATH + '/Destiny_' + \
+            format_date(CURR_INI) + '_' + format_date(CURR_END) + '.txt'
+        return current_file
+
 
 def manage_player(name, day, difficulty, hour):
+    "Manage player"
     day_point = None
     diff_point = None
     hour_point = None
@@ -144,14 +190,14 @@ def manage_player(name, day, difficulty, hour):
     dropline = None
     pos = int(1)
     day = convert_date(day)
-    p = week_file(day)
+    filepath = week_file(day)
     result = 'No se ha encontrado esa convocatoria.'
 
-    with open(p, 'r') as fr:
-        get_all = fr.readlines()
-    
-    with open(p, 'w') as f:
-        for i,line in enumerate(get_all):
+    with open(filepath, 'r') as ro_file:
+        get_all = ro_file.readlines()
+
+    with open(filepath, 'w') as rw_file:
+        for i, line in enumerate(get_all):
             if day.lower() in line.lower():
                 day_point = i
             elif day_point and difficulty.lower() in line.lower():
@@ -161,74 +207,90 @@ def manage_player(name, day, difficulty, hour):
                 hour_point = i
                 diff_point = None
             elif hour_point:
-                d = re.search(r'^(\d). '+name, line, re.I)
-                r = re.search(r'^(\d).', line, re.I)
-                if d:
+                already_listed = re.search(
+                    r'^(\d).\s' + name + '\n', line, re.I)
+                user_listed = re.search(r'^(\d)\.\s', line, re.I)
+                if already_listed:
                     delete_point = i
-                    result='Jugador eliminado.'
-                elif r and delete_point:
-                    pos = int(r.group(1))-1
-                    dropline = line.replace(r.group(1), str(pos))
+                    result = 'Jugador eliminado.'
+                elif user_listed and delete_point:
+                    pos = int(user_listed.group(1)) - 1
+                    dropline = line.replace(user_listed.group(1), str(pos))
                 elif delete_point:
                     delete_point = None
                     hour_point = None
-                elif r:
-                    pos = int(r.group(1))+1
+                elif user_listed:
+                    pos = int(user_listed.group(1)) + 1
                 else:
-                    newline = str(pos)+'. '+name+'\n'
-                    result='Jugador añadido.'                    
+                    newline = str(pos) + '. ' + name + '\n'
+                    result = 'Jugador añadido.'
                     hour_point = None
-                    
+
             if dropline:
-                f.writelines(dropline)
+                rw_file.writelines(dropline)
                 dropline = None
             elif newline:
-                f.writelines(newline)
-                f.writelines(line)
+                rw_file.writelines(newline)
+                rw_file.writelines(line)
                 newline = None
-            elif delete_point:
-                None
-            else:
-                f.writelines(line)
-    return(result)
-                
-                    
-def raids(words):
-    nw = re.search( r'(?:^.|^)\braid\b.*crea.*conv.*', words, re.I|re.M)
-    sr = re.search( r'(?:^.|^)\braid\b.*ver.*conv\S*\s*(\S*)\s*(\S*)\s*(\S*)', words, re.I|re.M)
-    mp = re.search( r'(?:^.|^)\braid\b\s*(\S*)\s*(\S*)\s*(\S*)\s*(\S*)', words, re.I|re.M)
-    if nw:
-        return(new_week())
-    elif sr:
-        date = sr.group(1)
-        difficulty = sr.group(2)
-        hour = sr.group(3)
-        if ':' in hour:
-            None
-        elif ':' in difficulty:
-            difficulty = '***'
-            hour = '***'
+            elif delete_point is None:
+                rw_file.writelines(line)
+
+    return result
+
+
+def dispatcher(words):
+    "Command parser and dispatcher"
+
+    newweek = re.search(r'(?:^.|^)\braid\b.*crea.*conv.*',
+                        words, re.I | re.M)
+    viewconv = re.search(
+        r'(?:^.|^)\braid\b.*ver.*conv\S*\s*(\S*)\s*(\S*)\s*(\S*)',
+        words, re.I | re.M)
+    manage = re.search(
+        r'(?:^.|^)\braid\b\s*(\S*)\s*(\S*)\s*(\S*)\s*(\S*)',
+        words, re.I | re.M)
+
+    if newweek:
+
+        return new_week()
+
+    elif viewconv:
+
+        conv_date = viewconv.group(1)
+        conv_level = viewconv.group(2)
+        conv_hour = viewconv.group(3)
+
+        if ':' not in conv_hour and ':' in conv_level:
+            conv_level = '***'
+            conv_hour = '***'
         else:
-            hour = '***'
-            
-        return(see_raid(date, difficulty, hour))
-    elif mp:
-        name = mp.group(1)
-        date = mp.group(2)
-        difficulty = mp.group(3)
-        hour = mp.group(4)
-        return(manage_player(name, date, difficulty, hour))
+            conv_hour = '***'
+
+        return view_conv(conv_date, conv_level, conv_hour)
+
+    elif manage:
+
+        name = manage.group(1)
+        conv_date = manage.group(2)
+        conv_level = manage.group(3)
+        conv_hour = manage.group(4)
+        return manage_player(name, conv_date, conv_level, conv_hour)
 
 
 def hear(words):
-    return raids(words)
+    "Implements hear to recieve the messages"
+    return dispatcher(words)
+
 
 def main(argv):
-    if len(sys.argv)>1:
-        print(hear(' '.join(sys.argv)))
+    "This method allows to execute the plugin in standalone mode"
+
+    if len(argv) > 1:
+        print(hear(argv[1]))
     else:
         print('I heard nothing.')
-    print(hear('/raid Rael hoy 10:00'))
+
 
 if __name__ == "__main__":
     main(sys.argv)
