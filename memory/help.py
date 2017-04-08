@@ -1,40 +1,48 @@
 #!/usr/bin/env python
-
+"""
+ help.py        Help information about the different commands.
+ Author:        David @davlopgom / Rael Garcia <self@rael.io>
+ Date:          04/2017
+ Tested on:     Python 3 / OS X 10.11.5
+"""
+import os
 import re
 import sys
+import json
 
-main_help = 'Para obtener ayuda de un tema específico escribe \'@raelbot ayuda *TEMA*\' con uno de los siguientes temas: \
-\n-Raids \
-\n-Trofeos'
+HELP_FILE = os.path.dirname(__file__) +  "/help.json"
 
-raid = 'Para apuntarte o eliminarte de una raid debes escribir \'/raid *psnid* *día/fecha(DD-MM-AA)* *dificultad* *hora*\'. \
-\nTambién puedes ver las convocatorias escribiendo \'/raid ver convocatoria *fecha* *dificultad* *hora*\'. \
-\nEjemplos: \
-\n/raid raelga hoy hard 10:00 \
-\n/raid raelga 12-04-17 hard 10:00 \
-\n/raid ver convocatoria mañana hard 10:00'
+def command_help(words):
 
-trophies='Pendiente de documentar'
+    "Responds with information about a subject."
+    command = re.search(r'.?(help)\s*(\w*)\s*$', words, re.I|re.M)
 
-def bot_help(words):
+    if command is None:
+        return
 
-        r=re.search( r'(?:^.|^)\b\S*bot\b.*\bayuda\b\s*(\S*)', words, re.I|re.M)
-        if r:
-                if r.group(1).lower()=='raids':
-                        return (raid)
-                elif r.group(1).lower()=='trofeos':
-                        return (trophies)
-                else:
-                        return (main_help)
+    subject = command.group(2) or command.group(1)
+
+    with open(HELP_FILE) as json_data:
+        help_messages = json.load(json_data)
+
+    if help_messages is None:
+        return
+
+    if help_messages.has_key(subject):
+        return '\n'.join(help_messages[subject]).encode('utf-8')
+
+    return "No help available for subject ", subject
 
 def hear(words):
-    return bot_help(words)
+    "Implements hear to recieve the messages and forward them to the plugin logic"
+    return command_help(words)
 
 def main(argv):
-    if len(sys.argv)>1:
-        print(hear(' '.join(sys.argv)))
+    "This allows to execute the plugin in standalone mode"
+    if len(argv) > 1:
+        print hear(' '.join(sys.argv))
     else:
-        print('I heard nothing.')
+        print 'I heard nothing.'
 
 if __name__ == "__main__":
     main(sys.argv)

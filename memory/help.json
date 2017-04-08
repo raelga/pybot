@@ -1,0 +1,10 @@
+{
+    "help": ["Para obtener ayuda de un comando específico escribe '/help *command*' con uno de los siguientes temas: raid trofeos"],
+    "raid": ["Para apuntarte o eliminarte de una raid debes escribir '/raid *psnid* *día/fecha(DD-MM-AA)* *dificultad* *hora*'.",
+        "También puedes ver las convocatorias escribiendo '/raid ver convocatoria *fecha* *dificultad* *hora*'.",
+        "Ejemplos:", "/raid raelga hoy hard 10:00", "/raid raelga 12-04-17 hard 10:00", "/raid ver convocatoria mañana hard 10:00"
+    ],
+    "trofeos": ["Para listar los trofeo de PSN de un usuario, debes escribir /trofeos *psnid*",
+        "Ejemplos:", "/trofeos raelga"
+    ]
+}
