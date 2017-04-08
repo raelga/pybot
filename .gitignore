@@ -1,5 +1,6 @@
 export.sh
 __pycache__
+__raids__
 pybot.egg*
 build/
 dist/
