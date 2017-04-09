@@ -12,15 +12,16 @@ import time
 import importlib
 import logging
 import threading
+import queue
 
-# Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 
+LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def memories() :
-    """Load python modules from memory folder"""
+
+def memories():
+    "Load python modules from memory folder"
 
     # Invalidates current cache
     importlib.invalidate_caches()
@@ -37,39 +38,43 @@ def memories() :
         return knowledge
 
     # For each .py file, get name and load the module
-    for memory in memories :
-        if memory.find("__") == -1 and memory.find(".pyc") == -1 :
+    for memory in memories:
+        if memory.find("__") == -1 and memory.find(".pyc") == -1:
             pypos = memory.find(".py")
             memory_name = memory[:pypos]
             try:
-                memory = importlib.import_module(memory_path + "." + memory_name)
+                memory = importlib.import_module(
+                    memory_path + "." + memory_name)
                 knowledge.append(importlib.reload(memory))
             except:
                 logger.error("%s is confusing, skipping" % (memory_name))
 
     return knowledge
 
-import queue
 
 def thougth(working_memory, knowledge, action, input):
-    """Thread oriented function, store return value on a queue"""
+    "Thread oriented function, store return value on a queue"
+
     # Try to execute the 'action' method for each module
     try:
         response = getattr(knowledge, action)(input)
-        if response: working_memory.put(response)
+        if response:
+            working_memory.put(response)
     except:
         logger.warn("%s not know how to %s" % (knowledge.__name__, action))
 
-def process(action, input) :
-    """Execute the action on each module"""
+
+def process(action, input):
+    "Execute the <action> on each module available in memories"
 
     thoughts = list()
     working_memory = queue.Queue()
 
-    for knowledge in memories() :
-            thought = threading.Thread(target=thougth, args=(working_memory, knowledge, action, input))
-            thoughts.append(thought)
-            thought.start()
+    for knowledge in memories():
+        thought = threading.Thread(target=thougth, args=(
+            working_memory, knowledge, action, input))
+        thoughts.append(thought)
+        thought.start()
 
     for thought in thoughts:
         thought.join()
@@ -81,36 +86,47 @@ def process(action, input) :
 
     return output
 
-def ears(words) :
-    """Call hear action on each module"""
+
+def ears(words):
+    """Call <hear> method on each module"""
     return process("hear", words)
 
-def eyes(words) :
-    """Call hear action on each module"""
+
+def eyes(words):
+    """Call <see> method on each module"""
     return process("see", words)
 
+
 def respond(words, stimulus):
-    """Call hear action on each module"""
+    """Call <stimulus> method on each module"""
     return process(stimulus, words)
 
-def choose(words) :
+
+def choose(words):
     """Call choose action on each module"""
     return process("Pulsa para desplegar", words)
 
-def menu(who) :
-    """Print main menu"""
-    menu=[["Grupos", '_groups'],
-          ["Battletags", '_battletags']]
-    return(menu)
 
-def submenu(words, who) :
+def remember(whoami, when, where, who, what):
+    """Store messages somewhere."""
+    logger.info("%s, %s, %s, %s,\"%s\";", whoami, when, where, who, what)
+
+
+def menu(who):
+    """Print main menu"""
+    menu = [["Grupos", '_groups'],
+            ["Battletags", '_battletags']]
+    return menu
+
+
+def submenu(words, who):
     """Print different submenus"""
     if words == '_groups':
         submenu = [
             ['Destiny', 'https://t.me/pkts_destiny'],
             ['Wildlands', 'https://t.me/joinchat/AAAAAD_ilo8nKdhZdQLm9Q'],
             ['Overwatch', 'https://t.me/pkts_overwatch'],
-            ['Horizon Zero Dawn', 'https://t.me/joinchat/AAAAAD-16s4VNcRaBxREnA'],
+            ['Horizon', 'https://t.me/joinchat/AAAAAD-16s4VNcRaBxREnA'],
             ['Battlefield', 'https://t.me/pkts_battlefield'],
             ['Final Fantasy', 'https://t.me/joinchat/AzNL9D_0xS_0h6Q3H5m69Q'],
             ['GTA', 'https://t.me/joinchat/AzNL9ECAaKh4y3za3egFbw'],
@@ -126,10 +142,6 @@ def submenu(words, who) :
             ['Miscelánea', 'https://t.me/miscelanea'],
         ]
     else:
-        submenu=[["Not implemented (yet)", 'home']]
+        submenu = [["Not implemented (yet)", 'home']]
 
-    return(submenu)
-
-def remember(when, where, who, what) :
-    """Store messages somewhere."""
-    logger.info("%s, %s, %s,\"%s\";" % (when, where, who, what))
+    return submenu
