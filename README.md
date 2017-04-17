@@ -4,32 +4,45 @@ Wrapper for python-telegram-bot to allow dynamic plug-in architecture, an attemp
 
 ### Execution flow
 
-1. `pybot.py` grabs the message from telegram and sends it to the `brain.py`.
+1. `bin/pybot` starts the bot with the selected adapter and using the configuration options defined in `conf/pybot.conf`.
+
+1. The selected adapter receives the message and sends it to the `brain.py`.
 
 1. The `brain.py` loads in runtime all the `.py` files in the `./memory` folder each time and try to execute a defined method, for example `hear(message.text)`.
 
 1. Each module in `./memory` with that method returns a response, the `brain.py` sends it to the `pybot.py` and it sends the response back to the chat.
 
-* As the methods are dynamically loaded, you can edit and add the files in `./memory` without need to restart `pybot.py`, and they will be reloaded on the next message.
+* As the methods are dynamically loaded, you can edit and add the files in `./memory` without need to restart `pybot.py`, and they will be reloaded on the next message. Overkill but funny.
 
-### Install
-
-```
-python3 setup.py
-```
-
-or
+### Makefile targets
 
 ```
-pip3 install requests
-pip3 install python-telegram-bot
+usage:             Show this help
+setup-venv:        Setup virtualenv
+lint:              Run code linter to check code style
+telegram:          Run pybot with the telegram adapter
+docker-build:      Build the docker image for running pybot
+docker-telegram:   Run with telegram adapter in the docker container
+docker-lint:       Run pep8 in the docker container
+docker-clean:      Remove the docker image
 ```
 
-### Run
+### Execution example
+
+````
+make docker-telegram
+````
 
 ```
-python3 pybot.py
+docker run -it --rm --name pybot -v /Users/rael/Code/python/pybot:/usr/src/pybot -w /usr/src/pybot 'pybot' bin/pybot telegram
+Starting pybot using conf token file. CTRL-C to quit.
+2017-04-17 07:35:54,392 - pybot.interfaces.telegram - INFO - Bot raelbot up and ready!
+2017-04-17 07:36:39,371 - pybot.brain - INFO - 116133952, Hello world!, 53693428, 2017-04-17 07:36:39,"53693428";
 ```
+
+### Contributing
+
+Contributions of all sizes are welcome. 
 
 ### License
 
