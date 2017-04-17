@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
- pyboy.py       Telegram bot framework using python-telegram-bot.
+ pyboy.py       Telegram adapter for pybot using python-telegram-bot.
  Author:        Rael Garcia <self@rael.io>
  Date:          06/2016
  Usage:         Export TELEGRAM_TOKEN variable and run the bot.
@@ -14,26 +14,16 @@ from importlib import reload
 from subprocess import check_output
 
 import requests
-import brain
 import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     CallbackQueryHandler, Filters
+import pybot.brain as brain
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
-
-
-def bot_start(bot, update):
-    "Handles the start command action."
-    bot.sendMessage(update.message.chat_id, text='TODO')
-
-
-def bot_help(bot, update):
-    "Handles the help command action."
-    bot.sendMessage(update.message.chat_id, text='TODO')
 
 
 def update_yourself(bot, update):
@@ -51,18 +41,34 @@ def error(bot, update, error_message):
                 update, error_message, bot.id)
 
 
+def interact(bot, update, action):
+    "Handler for interactions"
+    responses = brain.interact(action, update)
+
+    if responses:
+        speak(bot, update, responses)
+
+
 def hear(bot, update):
-    " dFunction to handle text messages"
+    "Handler for text messages"
 
-    thoughts = brain.ears(update.message.text)
+    cmd = re.search(r'^(!|\/)(\w+)\s?.*', update.message.text)
 
-    remember(bot, update)
-    if thoughts:
-        speak(bot, update, thoughts)
+    if cmd:
+
+        interact(bot, update, cmd.groups()[1])
+
+    else:
+
+        thoughts = brain.ears(update.message.text)
+
+        remember(bot, update)
+        if thoughts:
+            speak(bot, update, thoughts)
 
 
 def speak(bot, update, thoughts):
-    "Function handle bot text responses."
+    "Handler for bot text responses."
 
     LOG.info('I\'ve got something to say.')
     for words in thoughts:
@@ -75,7 +81,7 @@ def speak(bot, update, thoughts):
 
 
 def show(bot, update, stuff, media_type):
-    "Function to handle bot responses when he need more than words."
+    "Handler for bot responses when he need more than words."
 
     LOG.info('I\'ve got something to show.')
 
@@ -106,7 +112,7 @@ def view(bot, update):
 
     thoughts = brain.eyes(bot.getFile(
         update.message.photo[-1].file_id).file_path)
-
+    print(thoughts)
     remember(bot, update)
     if thoughts:
         speak(bot, update, thoughts)
@@ -117,15 +123,13 @@ def events(bot, update):
 
     if update.message.new_chat_member is not None:
         LOG.info('New member')
-        thoughts = brain.respond(update.message.text, 'salute')
+        interact(bot, update, 'user_entering')
 
     if update.message.left_chat_member is not None:
         LOG.info('Member left')
-        thoughts = brain.respond(update.message.text, 'farewell')
+        interact(bot, update, 'user_leaving')
 
     remember(bot, update)
-    if thoughts is not None:
-        speak(bot, update, thoughts)
 
 
 def menu_from_array(data, exit_button=None, columns=2):
@@ -224,10 +228,10 @@ def remember(bot, update):
                    when=update.message.date,
                    where=update.message.chat_id,
                    who=update.message.from_user.id,
-                   what=update.messagem.text)
+                   what=update.message.text)
 
 
-def main():
+def start():
     """Retrieves messages from the telegram API."""
 
     updater = Updater(os.environ['TELEGRAM_TOKEN'])
@@ -235,18 +239,14 @@ def main():
 
     LOG.info('Bot %s up and ready!', (dispatcher.bot.username))
 
-    # Message handlers
-    dispatcher.add_handler(MessageHandler([Filters.text], hear))
-    dispatcher.add_handler(MessageHandler([Filters.photo], view))
-    dispatcher.add_handler(MessageHandler([Filters.status_update], events))
-
-    # Command definitions
-    dispatcher.add_handler(CommandHandler("groups", show_menu))
-    dispatcher.add_handler(CommandHandler("trophies", hear))
-    dispatcher.add_handler(CommandHandler("raid", hear))
-    dispatcher.add_handler(CommandHandler("help", hear))
+    # Specific handlers
+    dispatcher.add_handler(MessageHandler(Filters.photo, view))
+    dispatcher.add_handler(MessageHandler(Filters.status_update, events))
     dispatcher.add_handler(CommandHandler("update_yourself", update_yourself))
     dispatcher.add_handler(CallbackQueryHandler(callback_handler))
+
+    # Default handler
+    dispatcher.add_handler(MessageHandler(Filters.all, hear))
 
     # Log all errors
     dispatcher.add_error_handler(error)
@@ -261,4 +261,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    start()

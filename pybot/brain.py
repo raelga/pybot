@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
  brain.py       Wrapper to allow dynamic plug-in architecture in bots.
  Author:        Rael Garcia <self@rael.io>
@@ -14,10 +15,11 @@ import logging
 import threading
 import queue
 
-
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+MEMORY_DIR = 'memory'
 
 
 def memories():
@@ -27,10 +29,10 @@ def memories():
     importlib.invalidate_caches()
 
     # Path where the modules are stored
-    memory_path = "memory"
+    memory_path = os.path.join(os.path.dirname(__file__), MEMORY_DIR)
     knowledge = list()
 
-    # If the folder exists, get the files
+    # If the folder exists,  get the files
     if os.path.isdir(memory_path):
         memories = os.listdir(memory_path)
     else:
@@ -39,29 +41,34 @@ def memories():
 
     # For each .py file, get name and load the module
     for memory in memories:
-        if memory.find("__") == -1 and memory.find(".pyc") == -1:
+
+        if not memory.startswith("__") and memory.endswith(".py"):
+
             pypos = memory.find(".py")
             memory_name = memory[:pypos]
+
             try:
                 memory = importlib.import_module(
-                    memory_path + "." + memory_name)
+                    "{}.{}.{}".format(__package__, MEMORY_DIR, memory_name))
                 knowledge.append(importlib.reload(memory))
-            except:
+            except Exception as err:
                 logger.error("%s is confusing, skipping" % (memory_name))
+                logger.error("%s" % (err))
 
     return knowledge
 
 
-def thougth(working_memory, knowledge, action, input):
+def thougth(working_memory, knowledge, action, stimulus):
     "Thread oriented function, store return value on a queue"
 
     # Try to execute the 'action' method for each module
     try:
-        response = getattr(knowledge, action)(input)
-        if response:
-            working_memory.put(response)
-    except:
+        method = getattr(knowledge, action, None)
+        if callable(method):
+            working_memory.put(method(stimulus))
+    except Exception as err:
         logger.warn("%s not know how to %s" % (knowledge.__name__, action))
+        logger.error("%s" % (err))
 
 
 def process(action, input):
@@ -84,7 +91,7 @@ def process(action, input):
     while not working_memory.empty():
         output.append(working_memory.get())
 
-    return output
+    return list(filter(None, output))
 
 
 def ears(words):
@@ -92,24 +99,24 @@ def ears(words):
     return process("hear", words)
 
 
-def eyes(words):
+def eyes(image):
     """Call <see> method on each module"""
-    return process("see", words)
+    return process("see", image)
 
 
-def respond(words, stimulus):
-    """Call <stimulus> method on each module"""
-    return process(stimulus, words)
+def interact(action, update):
+    """Call <action> method on each module"""
+    return process(action, update)
+
+
+def remember(whoami, what, where, when, who):
+    """Store messages somewhere."""
+    logger.info("%s, %s, %s, %s,\"%s\";", whoami, what, where, when, who)
 
 
 def choose(words):
     """Call choose action on each module"""
     return process("Pulsa para desplegar", words)
-
-
-def remember(whoami, when, where, who, what):
-    """Store messages somewhere."""
-    logger.info("%s, %s, %s, %s,\"%s\";", whoami, when, where, who, what)
 
 
 def menu(who):
