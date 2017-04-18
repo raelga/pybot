@@ -4,7 +4,7 @@ Wrapper for python-telegram-bot to allow dynamic plug-in architecture, an attemp
 
 ### Execution flow
 
-1. `bin/pybot` starts the bot with the selected adapter and using the configuration options defined in `conf/pybot.conf`.
+1. `bin/pybot` starts the bot with the selected adapter and using the configuration options defined in `conf/pybot.conf` or the command-line arguments.
 
 1. The selected adapter receives the message and sends it to the `brain.py`.
 
@@ -16,7 +16,7 @@ Wrapper for python-telegram-bot to allow dynamic plug-in architecture, an attemp
 
 ### Makefile targets
 
-```
+```Makefile
 usage:             Show this help
 setup-venv:        Setup virtualenv
 lint:              Run code linter to check code style
@@ -29,7 +29,7 @@ docker-clean:      Remove the docker image
 
 ### Execution example
 
-````
+````bash
 make docker-telegram
 ````
 
