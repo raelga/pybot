@@ -6,7 +6,7 @@
  Tested on:     Python 3 / OS X 10.11.5
 """
 # [START import_libraries]
-import argparse 
+import argparse
 import base64
 import os
 import random
@@ -15,22 +15,26 @@ from googleapiclient import discovery
 from oauth2client.client import GoogleCredentials
 # [END import_libraries]
 
+DEBUG = 0
+
+
 def see(url):
 
     import requests
     import shutil
 
-    path=str(random.random())
+    path = str(random.random())
 
-    r = requests.get(url, stream=True)
-    if r.status_code == 200:
-      with open(path, 'wb') as f:
-        r.raw.decode_content = True
-        shutil.copyfileobj(r.raw, f)
+    image = requests.get(url, stream=True)
+    if image.status_code == 200:
+        with open(path, 'wb') as tmpfile:
+            image.raw.decode_content = True
+            shutil.copyfileobj(image.raw, tmpfile)
 
-      res = process(path)
-      os.remove(path)
-      return(res)
+        res = process(path)
+        os.remove(path)
+        return res
+
 
 def process(photo_file):
     """Run a label request on a single image"""
@@ -51,7 +55,7 @@ def process(photo_file):
                 'features': [{
                     'type': 'LABEL_DETECTION',
                     'maxResults': 5
-                    }, {
+                }, {
                     'type': 'SAFE_SEARCH_DETECTION',
                     'maxResults': 5
                 }]
@@ -68,8 +72,10 @@ def process(photo_file):
                     for attr in item:
                         label = attr['description']
                         score = attr['score']
-                        #res = res + ("- %s [%.2f]\n" % (label, score))
-                    #res = res + "\n"
+                        if DEBUG:
+                            res = res + ("- %s [%.2f]\n" % (label, score))
+                    if DEBUG:
+                        res = res + "\n"
 
                 if itemid == 'safeSearchAnnotation':
                     for attr in item:
@@ -82,14 +88,16 @@ def process(photo_file):
                             elif likely == 'VERY_LIKELY':
                                 res = res + '\n@raelga!! PORNO!!!😱😱😱'
 
-        return(res)
+        return res
         # [END parse_response]
 
+
 def main(arg):
-    if len(arg)>1:
+    if len(arg) > 1:
         print(see(arg))
     else:
         print('I saw nothing.')
+
 
 # [START run_application]
 if __name__ == '__main__':
