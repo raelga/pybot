@@ -69,8 +69,8 @@ def message_from_update(update):
 
 def interact(bot, update, action):
     "Handler for interactions"
-    message = message_from_update(update)
-    responses = brain.interact(action, message)
+
+    responses = brain.interact(action, message_from_update(update))
 
     if responses:
         speak(bot, update, responses)
@@ -87,11 +87,13 @@ def hear(bot, update):
 
     else:
 
-        thoughts = brain.ears(update.message.text)
+        interact(bot, update, 'interact')
 
-        remember(bot, update)
-        if thoughts:
-            speak(bot, update, thoughts)
+    thoughts = brain.ears(update.message.text)
+
+    remember(bot, update)
+    if thoughts:
+        speak(bot, update, thoughts)
 
 
 def speak(bot, update, thoughts):
@@ -125,7 +127,7 @@ def show(bot, update, stuff, media_type):
             thing = stuff
 
         if thing and stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
-            bot.sendispatcher.oto(update.message.chat_id, photo=thing)
+            bot.sendPhoto(update.message.chat_id, photo=thing)
         elif thing:
             bot.sendDocument(update.message.chat_id, document=thing)
 

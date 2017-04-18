@@ -104,9 +104,9 @@ def eyes(image):
     return process("see", image)
 
 
-def interact(action, update):
+def interact(action, message):
     """Call <action> method on each module"""
-    return process(action, update)
+    return process(action, message)
 
 
 def remember(whoami, what, where, when, who):
