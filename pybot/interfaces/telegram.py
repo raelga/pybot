@@ -19,6 +19,10 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, \
     CallbackQueryHandler, Filters
 import pybot.brain as brain
 
+from pybot.common.chat import Chat
+from pybot.common.user import User
+from pybot.common.message import Message
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO)
@@ -41,9 +45,32 @@ def error(bot, update, error_message):
                 update, error_message, bot.id)
 
 
+def message_from_update(update):
+    "Define a pybot message based on the telegram meesage"
+
+    pybot_user = User(user_id=update.message.from_user.id,
+                      first_name=update.message.from_user.first_name,
+                      last_name=update.message.from_user.last_name,
+                      username=update.message.from_user.username,
+                      specie=update.message.from_user.type)
+
+    pybot_chat = Chat(chat_id=update.message.chat.id,
+                      chat_type=update.message.chat.type,
+                      chat_name=update.message.chat.title)
+
+    pybot_message = Message(message_id=update.message.message_id,
+                            user=pybot_user,
+                            chat=pybot_chat,
+                            date=update.message.date,
+                            text=update.message.text)
+
+    return pybot_message
+
+
 def interact(bot, update, action):
     "Handler for interactions"
-    responses = brain.interact(action, update)
+    message = message_from_update(update)
+    responses = brain.interact(action, message)
 
     if responses:
         speak(bot, update, responses)
