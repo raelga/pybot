@@ -9,55 +9,66 @@ import re
 import sys
 import random
 
-emojilol = [
-            '\U0001f602',
-            '\U0001f440',
-            '\U0001f617'
-            ]
+EMOJIS = [
+    '\U0001f602',
+    '\U0001f440',
+    '\U0001f617'
+]
 
-textlol = [
-            'lol',
-            '(╯°□°）╯︵ ┻━┻)',
-             'ay k m lol',
-             '(♥_♥)',
-             '‎(/.__.)/   \(.__.\)',
-             '( ͡° ͜ʖ ͡°)﻿',
-             '(∩ ͡° ͜ʖ ͡°)⊃━☆ﾟ. * ･ ｡'
-          ]
+ASCII_ARTS = [
+    'lol',
+    '(╯°□°）╯︵ ┻━┻)',
+    'ay k m lol',
+    '(♥_♥)',
+    '‎⨌⨀_⨀⨌',
+    '( ͡° ͜ʖ ͡°)﻿',
+    '(∩ ͡° ͜ʖ ͡°)⊃━☆ﾟ. * ･ ｡',
+    '(っ◕‿◕)っ',
+    '( ͡° ͜ʖ ͡°)-︻デ┳═ー',
+    'ヽ(￣(ｴ)￣)ﾉ',
+    '( ͠° ͟ʖ ͡°)﻿'
+]
 
-tellmemore = [
-                'Pues al final ha quedado buen día.',
-                'Cuéntame más',
-                'Me aburrooooooo',
-                'Nope',
-                'ahá..',
-                '\U0001f440'
-             ]
+TEXT = [
+    'Pues al final ha quedado buen día.',
+    'Cuéntame más',
+    'Me aburrooooooo',
+    'Nope',
+    'ahá..',
+    '\U0001f440'
+]
 
-botrulz = [ '\U0001f440', '\U0001f60e', '\U0001f60f' ]
+SKYNET_EMOJIS = ['\U0001f440', '\U0001f60e', '\U0001f60f']
+
 
 def see(photo):
+    "Implements hear to receive the image and execute the plugin logic"
 
-    return { 
-            1 : random.choice(emojilol) * random.randint(1,3),
-            2 : random.choice(textlol),
-            }.get(random.randint(1,16), None)
+    return {
+        1: random.choice(EMOJIS) * random.randint(1, 3),
+        2: random.choice(ASCII_ARTS),
+    }.get(random.randint(1, 16), None)
+
 
 def hear(words):
-    
-    if re.search( r'.*skynet.*', words, re.I|re.M):
-        return random.choice(botrulz) * random.randint(1,3)
+    "Implements hear to receive the messages and execute the plugin logic"
 
-    return { 
-            1 : random.choice(tellmemore),
-            }.get(random.randinit(1,100), None)
+    if re.search(r'.*skynet.*', words, re.I | re.M):
+        return random.choice(SKYNET_EMOJIS) * random.randint(1, 3)
+
+    return {
+        1: random.choice(TEXT),
+    }.get(random.randint(1, 100), None)
+
 
 def main(argv):
-    if len(sys.argv)>1:
+    "This allows to execute the plugin in standalone mode"
+    if len(argv) > 1:
         print(hear(' '.join(sys.argv)))
         print(see(' '.join(sys.argv)))
     else:
         print('I heard nothing.')
+
 
 if __name__ == "__main__":
     main(sys.argv)

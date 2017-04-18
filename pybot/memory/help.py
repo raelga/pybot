@@ -40,7 +40,7 @@ def command_help(words):
 
 
 def hear(words):
-    "Implements hear to recieve the messages and forward them to the plugin logic"
+    "Implements hear to receive the messages and execute the plugin logic"
     return command_help(words)
 
 

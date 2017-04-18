@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 """
- rael.py        Pesonal stuff.
+ rael.py        Simple healthchecker.
  Author:        Rael Garcia <self@rael.io>
- Date:          06/2016
+ Date:          04/2017
  Tested on:     Python 3 / OS X 10.11.5
 """
 import re
 import sys
 
 
-def rael_utils(words):
+def healthcheck(words):
     "Function to metion me when my name appears in a message"
 
-    if re.search(r'(^|\s)rael(\s|$)', words, re.I | re.M):
-        return "@raelga"
+    if re.search(r'.*Are you ok?.*', words, re.I | re.M):
+        return "I'm OK! I'm OK!!"
 
 
 def hear(words):
     "Implements hear to receive the messages and execute the plugin logic"
-    return rael_utils(words)
+    return healthcheck(words)
 
 
 def main(argv):
