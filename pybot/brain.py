@@ -52,8 +52,8 @@ def memories():
                     "{}.{}.{}".format(__package__, MEMORY_DIR, memory_name))
                 knowledge.append(importlib.reload(memory))
             except Exception as err:
-                logger.error("%s is confusing, skipping" % (memory_name))
-                logger.error("%s" % (err))
+                logger.warm("%s is confusing, skipping" % (memory_name))
+                logger.error("%s: %s" % (memory_name, err))
 
     return knowledge
 
@@ -68,7 +68,7 @@ def thougth(working_memory, knowledge, action, stimulus):
             working_memory.put(method(stimulus))
     except Exception as err:
         logger.warn("%s not know how to %s" % (knowledge.__name__, action))
-        logger.error("%s" % (err))
+        logger.error("%s: %s" % (action, err))
 
 
 def process(action, input):
@@ -112,43 +112,3 @@ def interact(action, message):
 def remember(whoami, what, where, when, who):
     """Store messages somewhere."""
     logger.info("%s, %s, %s, %s,\"%s\";", whoami, what, where, when, who)
-
-
-def choose(words):
-    """Call choose action on each module"""
-    return process("Pulsa para desplegar", words)
-
-
-def menu(who):
-    """Print main menu"""
-    menu = [["Grupos", '_groups'],
-            ["Battletags", '_battletags']]
-    return menu
-
-
-def submenu(words, who):
-    """Print different submenus"""
-    if words == '_groups':
-        submenu = [
-            ['Destiny', 'https://t.me/pkts_destiny'],
-            ['Wildlands', 'https://t.me/joinchat/AAAAAD_ilo8nKdhZdQLm9Q'],
-            ['Overwatch', 'https://t.me/pkts_overwatch'],
-            ['Horizon', 'https://t.me/joinchat/AAAAAD-16s4VNcRaBxREnA'],
-            ['Battlefield', 'https://t.me/pkts_battlefield'],
-            ['Final Fantasy', 'https://t.me/joinchat/AzNL9D_0xS_0h6Q3H5m69Q'],
-            ['GTA', 'https://t.me/joinchat/AzNL9ECAaKh4y3za3egFbw'],
-            ['Space', 'https://t.me/joinchat/AzNL9EAy0gzR3etQ_Q4JSw'],
-            ['Division', 'https://t.me/joinchat/ANSWpD4TPEtu5wGU6O7J3Q'],
-            ['Souls', 'https://t.me/joinchat/AzNL9ACpL0yP02kER67Mhg'],
-            ['Borderlands', 'https://t.me/joinchat/AzNL9AD3n5pKH_6e1trOZA'],
-            ['Hearthstone', 'https://t.me/joinchat/AzNL9D7UHCsWDtfgz1cw3g'],
-            ['PC Master Race', 'https://t.me/joinchat/AzNL9EFBO0e81gXlECiRzA'],
-            ['Pokémon', 'https://t.me/joinchat/AzNL9D-KxgBdpa9RlWF2kg'],
-            ['Nintendo', 'https://t.me/joinchat/AAAAAEE4x5M1gaboANV6aw'],
-            ['StarWars', 'https://t.me/joinchat/AAAAAEBbCjW8vueDkXwFyQ'],
-            ['Miscelánea', 'https://t.me/miscelanea'],
-        ]
-    else:
-        submenu = [["Not implemented (yet)", 'home']]
-
-    return submenu
