@@ -19,9 +19,10 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, \
     CallbackQueryHandler, Filters
 import pybot.brain as brain
 
-from pybot.common.chat import Chat
 from pybot.common.user import User
+from pybot.common.chat import Chat
 from pybot.common.message import Message
+from pybot.common.action import Action
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -48,21 +49,24 @@ def error(bot, update, error_message):
 def message_from_update(update):
     "Define a pybot message based on the telegram meesage"
 
-    pybot_user = User(user_id=update.message.from_user.id,
-                      first_name=update.message.from_user.first_name,
-                      last_name=update.message.from_user.last_name,
-                      username=update.message.from_user.username,
-                      specie=update.message.from_user.type)
+    pybot_user = User(
+        user_id=update.message.from_user.id,
+        first_name=update.message.from_user.first_name,
+        last_name=update.message.from_user.last_name,
+        username=update.message.from_user.username,
+        specie=update.message.from_user.type)
 
-    pybot_chat = Chat(chat_id=update.message.chat.id,
-                      chat_type=update.message.chat.type,
-                      chat_name=update.message.chat.title)
+    pybot_chat = Chat(
+        chat_id=update.message.chat.id,
+        chat_type=update.message.chat.type,
+        chat_name=update.message.chat.title)
 
-    pybot_message = Message(message_id=update.message.message_id,
-                            user=pybot_user,
-                            chat=pybot_chat,
-                            date=update.message.date,
-                            text=update.message.text)
+    pybot_message = Message(
+        message_id=update.message.message_id,
+        user=pybot_user,
+        chat=pybot_chat,
+        date=update.message.date,
+        text=update.message.text)
 
     return pybot_message
 
@@ -73,7 +77,7 @@ def interact(bot, update, action):
     responses = brain.interact(action, message_from_update(update))
 
     if responses:
-        speak(bot, update, responses)
+        communicate(bot, update, responses)
 
 
 def hear(bot, update):
@@ -93,47 +97,7 @@ def hear(bot, update):
 
     remember(bot, update)
     if thoughts:
-        speak(bot, update, thoughts)
-
-
-def speak(bot, update, thoughts):
-    "Handler for bot text responses."
-
-    LOG.info('I\'ve got something to say.')
-    for words in thoughts:
-        if os.path.isfile(words):
-            show(bot, update, words, 'file')
-        elif words.startswith('http'):
-            show(bot, update, words, 'url')
-        else:
-            bot.sendMessage(update.message.chat_id, text=words)
-
-
-def show(bot, update, stuff, media_type):
-    "Handler for bot responses when he need more than words."
-
-    LOG.info('I\'ve got something to show.')
-
-    try:
-
-        if media_type == 'file':
-            thing = open(stuff, 'rb')
-        elif media_type == 'url':
-            if requests.get(stuff).status_code == 200:
-                thing = stuff
-            else:
-                LOG.warning("%s is not available.", stuff)
-        else:
-            thing = stuff
-
-        if thing and stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
-            bot.sendPhoto(update.message.chat_id, photo=thing)
-        elif thing:
-            bot.sendDocument(update.message.chat_id, document=thing)
-
-    except OSError as err:
-        LOG.warning("I can't show the %s. (%s)", stuff, err)
-        bot.sendMessage(update.message.chat_id, text=stuff)
+        communicate(bot, update, thoughts)
 
 
 def view(bot, update):
@@ -161,93 +125,157 @@ def events(bot, update):
     remember(bot, update)
 
 
-def menu_from_array(data, exit_button=None, columns=2):
+def communicate(bot, update, thoughts):
+    "Handler for bot text responses."
+
+    for thought in thoughts:
+
+        if isinstance(thought, str):
+
+            if os.path.isfile(thought):
+                show(bot, update, thought, 'file')
+            elif thought.startswith('http'):
+                show(bot, update, thought, 'url')
+            else:
+                speak(bot, update, thought)
+
+        elif isinstance(thought, Action):
+
+            execute(bot, update, thought)
+
+
+def speak(bot, update, words):
+    "Handler for bot text responses."
+
+    LOG.info('I\'ve got something to say.')
+
+    bot.sendMessage(update.message.chat_id, text=words)
+
+
+def show(bot, update, stuff, media_type, reply_markup=None):
+    "Handler for bot responses when he need more than words."
+
+    LOG.info('I\'ve got something to show.')
+
+    if reply_markup:
+
+        bot.sendMessage(update.message.chat_id,
+                        text=stuff,
+                        parse_mode=media_type,
+                        reply_markup=reply_markup)
+    else:
+
+        try:
+
+            if media_type == 'file':
+
+                thing = open(stuff, 'rb')
+
+            elif media_type == 'url':
+
+                if requests.get(stuff).status_code == 200:
+                    thing = stuff
+                else:
+                    LOG.warning("%s is not available.", stuff)
+
+            else:
+
+                thing = stuff
+
+            if thing and stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
+
+                bot.sendPhoto(update.message.chat_id, photo=thing)
+
+            elif thing:
+
+                bot.sendDocument(update.message.chat_id, document=thing)
+
+        except OSError as err:
+            LOG.warning("I can't show the %s. (%s)", stuff, err)
+            bot.sendMessage(update.message.chat_id, text=stuff)
+
+
+def edit(bot, update, text, reply_markup=None):
+    "Update an existing message"
+
+    if reply_markup:
+
+        bot.editMessageText(text=text,
+                            parse_mode=telegram.ParseMode.HTML,
+                            reply_markup=reply_markup,
+                            chat_id=update.message.chat_id,
+                            message_id=update.message.message_id)
+
+    else:
+
+        bot.editMessageText(text=text,
+                            chat_id=update.message.chat_id,
+                            message_id=update.message.message_id)
+
+
+def callback_handler(bot, update):
+    """Function to handle the telegram callbacks"""
+    interact(bot, update.callback_query, update.callback_query.data)
+
+
+def execute(bot, update, action):
+    "Function to print a dynamic menu"
+
+    if action.name == 'edit_message':
+
+        if action.payload:
+
+            edit(bot, update, action.text,
+                 reply_markup=get_menu(action.payload))
+
+        elif action.text:
+
+            edit(bot, update, action.text)
+
+    elif action.name == 'new_message':
+
+        if action.payload:
+
+            show(bot, update, action.text,
+                 media_type=telegram.ParseMode.HTML,
+                 reply_markup=get_menu(action.payload))
+
+        elif action.text:
+
+            speak(bot, update, action.text)
+
+
+def get_menu(data, columns=2):
     "Function to convert an array to Telegram InlineKeyboard."
 
     menu = []
     menu.append([])
 
     i = 0
-    for column in enumerate(data):
+    for option in enumerate(data):
 
-        if re.search(r'^http:|https:.*', data[column][1]):
+        if not option[1]:
+            # Insert blank elements to emulate a separator
+            blank = (option[0] + 1) % columns
+            while blank:
+                menu.append([])
+                blank -= 1
+
+        elif re.search(r'^http:|https:.*', option[1][1]):
+
             menu[i].append(
-                telegram.InlineKeyboardButton(data[column][0],
-                                              url=data[column][1]))
+                telegram.InlineKeyboardButton(option[1][0],
+                                              url=option[1][1]))
         else:
             menu[i].append(
-                telegram.InlineKeyboardButton(data[column][0],
-                                              callback_data=data[column][1]))
+                telegram.InlineKeyboardButton(option[1][0],
+                                              callback_data=option[1][1]))
 
-        if not (column + 1) % columns:
+        if not (option[0] + 1) % columns:
             menu.append([])
             i += 1
 
-    if exit_button:
-        menu.append([telegram.InlineKeyboardButton(
-            exit_button[0], callback_data=exit_button[1])])
-
     return telegram.InlineKeyboardMarkup(menu)
-
-
-def show_menu(bot, update):
-    "Function to print a dynamic menu"
-
-    data = brain.menu(update.message.from_user.id)
-    menu = menu_from_array(data, columns=3)
-
-    return bot.sendMessage(update.message.chat_id,
-                           text='Pulsa para desplegar',
-                           parse_mode=telegram.ParseMode.HTML,
-                           reply_markup=menu)
-
-
-def update_message(bot, message, text, menu=None):
-    "Update an existing message"
-
-    if menu:
-
-        bot.editMessageText(text=text,
-                            parse_mode=telegram.ParseMode.HTML,
-                            reply_markup=menu,
-                            chat_id=message.chat_id,
-                            message_id=message.message_id)
-
-    else:
-
-        bot.editMessageText(text=text,
-                            chat_id=message.chat_id,
-                            message_id=message.message_id)
-
-
-def callback_handler(bot, update):
-    """Function to handle the telegram callbacks"""
-
-    query = update.callback_query
-
-    if query.data == 'exit':
-
-        update_message(bot, query.message, '🙊')
-
-    elif query.data == 'home':
-
-        data = brain.menu(query.from_user.id)
-        menu = menu_from_array(data, ['x close', 'exit'])
-
-        update_message(bot, query.message, query.data, menu)
-
-    elif re.search(r'^_.*', query.data):
-
-        data = brain.submenu(query.data, query.from_user.id)
-        menu = menu_from_array(data, ['< back', 'home'])
-
-        update_message(bot, query.message, query.data, menu)
-
-    else:
-
-        thoughts = brain.ears(query.data)
-        if thoughts:
-            speak(bot, query, thoughts)
 
 
 def remember(bot, update):
