@@ -7,22 +7,22 @@
  Usage:         Export TELEGRAM_TOKEN variable and run the bot.
  Tested on:     Python 3 / OS X 10.11.5
 """
-import re
-import os
 import logging
+import os
+import re
 from importlib import reload
 from subprocess import check_output
 
 import requests
 import telegram
-from telegram.ext import Updater, CommandHandler, MessageHandler, \
-    CallbackQueryHandler, Filters
-import pybot.brain as brain
+from telegram.ext import (CallbackQueryHandler, CommandHandler, Filters,
+                          MessageHandler, Updater)
 
-from pybot.common.user import User
+import pybot.brain as brain
+from pybot.common.action import Action
 from pybot.common.chat import Chat
 from pybot.common.message import Message
-from pybot.common.action import Action
+from pybot.common.user import User
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -46,7 +46,7 @@ def error(bot, update, error_message):
                 update, error_message, bot.id)
 
 
-def message_from_update(update):
+def message_from_update(update, media=None):
     "Define a pybot message based on the telegram meesage"
 
     pybot_user = User(
@@ -66,7 +66,8 @@ def message_from_update(update):
         user=pybot_user,
         chat=pybot_chat,
         date=update.message.date,
-        text=update.message.text)
+        text=update.message.text,
+        media=media)
 
     return pybot_message
 
@@ -103,12 +104,26 @@ def hear(bot, update):
 def view(bot, update):
     "Function to handle photo messages."
 
-    thoughts = brain.eyes(bot.getFile(
-        update.message.photo[-1].file_id).file_path)
-    print(thoughts)
-    remember(bot, update)
+    url = bot.getFile(
+        update.message.photo[-1].file_id).file_path
+
+    thoughts = brain.eyes(url)
+
+    remember(bot, update, media=url)
     if thoughts:
-        speak(bot, update, thoughts)
+        communicate(bot, update, thoughts)
+
+
+def listen(bot, update):
+    "Function to handle photo messages."
+    url = bot.getFile(update.message.voice.file_id).file_path
+
+    thoughts = brain.interact('listen', message_from_update(update, url))
+
+    remember(bot, update, media=url)
+
+    if thoughts:
+        communicate(bot, update, thoughts)
 
 
 def events(bot, update):
@@ -294,14 +309,10 @@ def get_menu(data, columns=2):
     return telegram.InlineKeyboardMarkup(menu)
 
 
-def remember(bot, update):
+def remember(bot, update, media=None):
     """Handler to store all message info in the brain."""
 
-    brain.remember(whoami=bot.id,
-                   when=update.message.date,
-                   where=update.message.chat_id,
-                   who=update.message.from_user.id,
-                   what=update.message.text)
+    brain.remember(message_from_update(update, media=media))
 
 
 def start():
@@ -314,6 +325,7 @@ def start():
 
     # Specific handlers
     dispatcher.add_handler(MessageHandler(Filters.photo, view))
+    dispatcher.add_handler(MessageHandler(Filters.voice, listen))
     dispatcher.add_handler(MessageHandler(Filters.status_update, events))
     dispatcher.add_handler(CommandHandler("update_yourself", update_yourself))
     dispatcher.add_handler(CallbackQueryHandler(callback_handler))

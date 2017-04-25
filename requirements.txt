@@ -26,3 +26,4 @@ telegram==0.0.1
 uritemplate==3.0.0
 urllib3==1.20
 wrapt==1.10.10
+google-cloud-speech==0.25.1

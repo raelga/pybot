@@ -15,11 +15,19 @@ class Message(object):
         chat (:class:`pytbot.common.Chat`): Chat where the message was posted
         date (:class:`datetime.datetime`): Timestamp of the message
         text (str): Message text
+        media (str): Additional media attached to the message
 
 
     Args:
-        person_id (int):
-        first_name (str):
+        message_id (int):
+        user (:class:`pytbot.common.User`)
+        chat (:class:`pytbot.common.Chat`)
+        date (:class:`datetime.datetime`)
+        text (str): Message text
+
+    Keyword args:
+        media (Optional[str]): Url of additional media attached to the message
+
 
     """
 
@@ -28,7 +36,8 @@ class Message(object):
                  user,
                  date,
                  text,
-                 chat):
+                 chat,
+                 media):
 
         # Required
         self.message_id = int(message_id)
@@ -36,3 +45,5 @@ class Message(object):
         self.date = date
         self.text = text
         self.chat = chat
+        # Optionals
+        self.media = media

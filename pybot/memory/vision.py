@@ -74,6 +74,9 @@ def process(photo_file):
                         score = attr['score']
                         if DEBUG:
                             res = res + ("- %s [%.2f]\n" % (label, score))
+                        if label == 'cat':
+                            res = 'Gatos @raelga!!'
+
                     if DEBUG:
                         res = res + "\n"
 

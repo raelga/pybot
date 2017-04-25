@@ -52,7 +52,7 @@ def memories():
                     "{}.{}.{}".format(__package__, MEMORY_DIR, memory_name))
                 knowledge.append(importlib.reload(memory))
             except Exception as err:
-                logger.warm("%s is confusing, skipping" % (memory_name))
+                logger.warn("%s is confusing, skipping" % (memory_name))
                 logger.error("%s: %s" % (memory_name, err))
 
     return knowledge
@@ -109,6 +109,10 @@ def interact(action, message):
     return process(action, message)
 
 
-def remember(whoami, what, where, when, who):
+def remember(message):
     """Store messages somewhere."""
-    logger.info("%s, %s, %s, %s,\"%s\";", whoami, what, where, when, who)
+    logger.info("%s, %s, \"%s\", %s, \"%s\", \"%s\", \"%s\";",
+                message.message_id,
+                message.chat.chat_id, message.chat.chat_name,
+                message.user.user_id, message.user.username,
+                message.text, message.media)
