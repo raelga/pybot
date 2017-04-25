@@ -144,12 +144,18 @@ def communicate(bot, update, thoughts):
             execute(bot, update, thought)
 
 
-def speak(bot, update, words):
+def speak(bot, update, words, language=None):
     "Handler for bot text responses."
 
     LOG.info('I\'ve got something to say.')
 
-    bot.sendMessage(update.message.chat_id, text=words)
+    if language:
+
+        bot.sendMessage(update.message.chat_id,
+                        text=words, parse_mode=language)
+    else:
+
+        bot.sendMessage(update.message.chat_id, text=words)
 
 
 def show(bot, update, stuff, media_type, reply_markup=None):
@@ -223,7 +229,7 @@ def execute(bot, update, action):
 
     if action.name == 'edit_message':
 
-        if action.payload:
+        if action.markup == 'menu':
 
             edit(bot, update, action.text,
                  reply_markup=get_menu(action.payload))
@@ -234,11 +240,21 @@ def execute(bot, update, action):
 
     elif action.name == 'new_message':
 
-        if action.payload:
+        if action.markup == 'menu':
 
             show(bot, update, action.text,
                  media_type=telegram.ParseMode.HTML,
                  reply_markup=get_menu(action.payload))
+
+        elif action.markup == 'markdown':
+
+            speak(bot, update, action.text,
+                  language=telegram.ParseMode.MARKDOWN)
+
+        elif action.markup == 'html':
+
+            speak(bot, update, action.text,
+                  language=telegram.ParseMode.HTML)
 
         elif action.text:
 

@@ -13,8 +13,9 @@ import os
 import re
 import sys
 import json
+from pybot.common.action import Action
 
-HELP_FILE = os.path.dirname(__file__) + "help.json"
+HELP_FILE = os.path.join(os.path.dirname(__file__), "help.json")
 
 
 def command_help(words):
@@ -39,15 +40,20 @@ def command_help(words):
     return "No help available for subject ", subject
 
 
-def hear(words):
+def help(message):
     "Implements hear to receive the messages and execute the plugin logic"
-    return command_help(words)
+    return Action(
+        name='new_message',
+        target=message.chat.chat_id,
+        text=command_help(message.text),
+        markup='markdown'
+    )
 
 
 def main(argv):
     "This allows to execute the plugin in standalone mode"
     if len(argv) > 1:
-        print(hear(' '.join(sys.argv)))
+        print(help(' '.join(sys.argv)))
     else:
         print('I heard nothing.')
 

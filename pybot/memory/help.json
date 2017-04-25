@@ -1,5 +1,6 @@
 {
-    "help": ["Para obtener ayuda de un comando específico escribe '/help *command*' con uno de los siguientes temas: raid trofeos"],
+    "help": ["Para obtener ayuda de un comando específico escribe '/help *command*' con uno de los siguientes temas: raid trofeos.",
+    "Código del bot disponible en [pybot]https://github.com/raelga/pybot"],
     "raid": ["Para apuntarte o eliminarte de una raid debes escribir '/raid *psnid* *día/fecha(DD-MM-AA)* *dificultad* *hora*'.",
         "También puedes ver las convocatorias escribiendo '/raid ver convocatoria *fecha* *dificultad* *hora*'.",
         "Ejemplos:", "/raid raelga hoy hard 10:00", "/raid raelga 12-04-17 hard 10:00", "/raid ver convocatoria mañana hard 10:00"

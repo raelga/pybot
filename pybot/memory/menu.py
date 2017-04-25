@@ -14,7 +14,7 @@ import sys
 import json
 from pybot.common.action import Action
 
-MENU_FILE = os.path.dirname(__file__) + "/menu.json"
+MENU_FILE = os.path.join(os.path.dirname(__file__), "menu.json")
 
 
 class Menu(object):
@@ -84,7 +84,7 @@ def get_action(action, target, text=None, menu=None):
             name=action,
             target=target,
             text=menu.text,
-            payload_type="menu",
+            markup="menu",
             payload=menu.options
         )
 

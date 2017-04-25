@@ -12,7 +12,7 @@ class Action(object):
         name (int):
         target (str):
         text (str):
-        payload_type (str):
+        markup (str):
         payload (dict):
 
     Args:
@@ -21,7 +21,7 @@ class Action(object):
         text (str):
 
     Keyword Args:
-        payload_type (Optional[dict]):
+        markup (Optional[dict]):
         payload (Optional[dict]):
 
     """
@@ -30,7 +30,7 @@ class Action(object):
                  name,
                  target,
                  text,
-                 payload_type=None,
+                 markup=None,
                  payload=None):
 
         # Required
@@ -38,5 +38,5 @@ class Action(object):
         self.target = target
         self.text = text
         # Optionals
-        self.payload_type = payload_type
+        self.markup = markup
         self.payload = payload
