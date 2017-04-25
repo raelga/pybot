@@ -38,21 +38,31 @@ def listen(message):
 
     path = str(random.random())
 
-    speech = requests.get(message.media, stream=True)
-    if speech.status_code == 200:
-        with open(path, 'wb') as tmpfile:
-            speech.raw.decode_content = True
-            shutil.copyfileobj(speech.raw, tmpfile)
+    try:
 
-        res = transcribe(path)
-        os.remove(path)
+        speech = requests.get(message.media, stream=True)
+        if speech.status_code == 200:
+            with open(path, 'wb') as tmpfile:
+                speech.raw.decode_content = True
+                shutil.copyfileobj(speech.raw, tmpfile)
 
-        if message.user.username:
-            said = '@' + message.user.username + ': '
-        elif message.user.first_name:
-            said = message.user.first_name + ': '
+                res = transcribe(path)
 
-        return said + res
+            os.remove(path)
+
+            if message.user.username:
+                said = '@' + message.user.username + ': '
+            elif message.user.first_name:
+                said = message.user.first_name + ': '
+
+            return said + res
+
+    except:
+
+        if os.path.isfile(path):
+            os.remove(path)
+
+        return 'dafuq?'
 
 
 def transcribe(speech_file):
