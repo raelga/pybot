@@ -42,6 +42,9 @@ win-telegram:     ## Run pybot with the telegram adapter in windows
 	.venv\Scripts\activate
 	python bin\pybot telegram
 
+win-cleanup:      ## Remove .venv dir
+	rmdir /s /q .venv
+
 docker-build:     ## Build the docker image for running pybot
 	$(DOCKER_BUILD)
 
