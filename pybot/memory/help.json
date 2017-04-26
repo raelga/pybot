@@ -1,6 +1,6 @@
 {
     "help": ["To obtain help about a particular command or funcionality, use '/help *command*'.", 
-    "Available helpers:", "- raid", "- trophies",
+    "Available helpers:", "- trophies",
     "",
     "Issues or requests to @raelga. Code available in [github/raelga/pybot](https://github.com/raelga/pybot)"],
     "raid": ["Para apuntarte o eliminarte de una raid debes escribir '/raid *psnid* *día/fecha(DD-MM-AA)* *dificultad* *hora*'.",
