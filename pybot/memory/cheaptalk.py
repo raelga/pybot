@@ -58,7 +58,7 @@ def hear(words):
 
     return {
         1: random.choice(TEXT),
-    }.get(random.randint(1, 100), None)
+    }.get(random.randint(1, 5000), None)
 
 
 def main(argv):
