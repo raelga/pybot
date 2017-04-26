@@ -31,6 +31,17 @@ lint:             ## Run code linter to check code style
 telegram:         ## Run pybot with the telegram adapter
 	($(VENV_RUN); exec $(PYBOT_TELEGRAM))
 
+win-setup-venv:	  ## Setup virtualenv in windows
+	pip install virtualenv
+	virtualenv .venv
+	.venv\Scripts\activate
+	pip install --upgrade pip
+	pip install -r requirements.txt
+
+win-telegram:     ## Run pybot with the telegram adapter in windows
+	.venv\Scripts\activate
+	python bin\pybot telegram
+
 docker-build:     ## Build the docker image for running pybot
 	$(DOCKER_BUILD)
 
