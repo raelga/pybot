@@ -255,7 +255,6 @@ def main(argv):
         print(hear(' '.join(sys.argv)))
     else:
         print('I heard nothing.')
-    print(exec_sql('select * from fireteams'))
 
 if __name__ == "__main__":
     main(sys.argv)
