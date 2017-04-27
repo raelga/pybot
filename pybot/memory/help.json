@@ -3,9 +3,9 @@
     "Available helpers:", "- trophies",
     "",
     "Issues or requests to @raelga. Code available in [github/raelga/pybot](https://github.com/raelga/pybot)"],
-    "raid": ["Para apuntarte o eliminarte de una raid debes escribir '/raid *psnid* *día/fecha(DD-MM-AA)* *dificultad* *hora*'.",
-        "También puedes ver las convocatorias escribiendo '/raid ver convocatoria *fecha* *dificultad* *hora*'.",
-        "Ejemplos:", "/raid raelga hoy hard 10:00", "/raid raelga 12-04-17 hard 10:00", "/raid ver convocatoria mañana hard 10:00"
+    "raid": ["Para apuntarte o eliminarte de una raid debes escribir '/raid *difficultad(normal/hard: es opcional, si solo hay una dificultad en el juego se puede obviar)* *fecha(DD-MM-AA)* *hora* *psnid*'.",
+        "También puedes ver las convocatorias escribiendo '/raid ver/mostrar *dificultad* *fecha* *hora*'.",
+        "Ejemplos:", "/raid 28/04/17 10:00 raelga", "/raid hard 28-04-2017 10:00 raelga", "/raid ver 28/04/17", "/raid ver hard 28-04-2017 10:00"
     ],
     "trophies": ["Para listar los trofeo de PSN de un usuario, debes escribir /trofeos *psnid*",
         "Ejemplos:", "/perfil raelga"
