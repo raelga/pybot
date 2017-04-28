@@ -1,4 +1,3 @@
-
 import time
 import os
 import sys
@@ -45,6 +44,7 @@ def get_values(data):
     mode = ''
     hour = None
     psnid = None
+    info = ''
 
     d = re.search( r'(\d+(?:-|\/)\d+(?:-|\/)\d+)', data, re.I) #Search the date
     if d:
@@ -55,12 +55,14 @@ def get_values(data):
         p = re.search( r'(?:\d+(?:-|\/)\d+(?:-|\/)\d+)\s+(?:\S+)\s+(\S+)', data, re.I) #Search the psnid based on date and hour
         if p:
             psnid = p.group(1).lower()
-        g = re.search( r'(\S+)\s+(?:\S+)\s+(?:\d+(?:-|\/)\d+(?:-|\/)\d+)', data, re.I) #Search the game based on date and mode
-        m = re.search( r'(\S+)\s+(?:\d+(?:-|\/)\d+(?:-|\/)\d+)', data, re.I) #Search the mode based on date
+        m = re.search( r'(.+)\s+(?:\d+(?:-|\/)\d+(?:-|\/)\d+)', data, re.I) #Search the mode based on date
         if m:
             mode = m.group(1).lower()
+        i = re.search( r'(?:\d+(?:-|\/)\d+(?:-|\/)\d+)\s+(?:\S+)\s+(?:\S+)\s+(.+)', data, re.I) #Search aditional info based on date, hour and psnid
+        if i:
+            info = i.group(1).lower()
 
-    return(game, mode, day, hour, psnid)
+    return(game, mode, day, hour, psnid, info)
 
 def init_table():
     """Function to create the init DB and table if doesn't exists"""
@@ -76,6 +78,7 @@ def init_table():
                     day TEXT NOT NULL,
                     hour TEXT NOT NULL,
                     psnid TEXT NOT NULL,
+                    info TEXT,
                     timestamp TEXT NOT NULL,
                     UNIQUE (day, hour, psnid))""")
     con.commit()
@@ -120,17 +123,17 @@ def fireteam_query(game, mode, day, hour):
                     for mode in modes:
                         if mode[0]:
                             result.append(indent*2 + mode[0].upper())
-                        sql = """select psnid from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour[0]+"""' and mode = '"""+mode[0]+"""' order by timestamp desc"""
+                        sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour[0]+"""' and mode = '"""+mode[0]+"""' order by timestamp"""
                         rows = exec_sql(sql)
                         for row in rows:
-                            result.append(indent*3 + row[0])
+                            result.append(indent*3 + row[0] + indent*1 + row[1])
                         result.append('')
                 else:
                     result.append(indent*2 + mode.upper())
-                    sql = """select psnid from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour[0]+"""' """+append_sql+""" order by timestamp desc"""
+                    sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour[0]+"""' """+append_sql+""" order by timestamp"""
                     rows = exec_sql(sql)
                     for row in rows:
-                        result.append(indent*3 + row[0])
+                        result.append(indent*3 + row[0] + indent*1 + row[1])
         else:
             result.append(indent*1 + hour)
             if not mode:
@@ -139,21 +142,21 @@ def fireteam_query(game, mode, day, hour):
                 for mode in modes:
                     if mode[0]:
                         result.append(indent*2 + mode[0].upper())
-                    sql = """select psnid from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour+"""' and mode = '"""+mode[0]+"""' order by timestamp desc"""
+                    sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour+"""' and mode = '"""+mode[0]+"""' order by timestamp"""
                     rows = exec_sql(sql)
                     for row in rows:
-                        result.append(indent*3 + row[0])
+                        result.append(indent*3 + row[0] + indent*1 + row[1])
                     result.append('')
             else:
                 result.append(indent*2 + mode.upper())
-                sql = """select psnid from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour+"""' """+append_sql+""" order by timestamp desc"""
+                sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour+"""' """+append_sql+""" order by timestamp"""
                 rows = exec_sql(sql)
                 for row in rows:
-                    result.append(indent*3 + row[0])
+                    result.append(indent*3 + row[0] + indent*1 + row[1])
 
     return('\n'.join(result))
 
-def insert_player(chatid, userid, game, mode, day, hour, psnid):
+def insert_player(chat_id, user_id, game, mode, day, hour, psnid, info):
     """Function to insert players"""
     con = sqlite3.connect(DB_PATH)
     cursor = con.cursor()
@@ -163,17 +166,19 @@ def insert_player(chatid, userid, game, mode, day, hour, psnid):
                    game,
                    mode,
                    day,  
-                   hour, 
-                   psnid, 
+                   hour,
+                   psnid,
+                   info,
                    timestamp)
                    VALUES
-                   ("""+str(chatid)+""",
-                   """+str(userid)+""",
+                   ("""+str(chat_id)+""",
+                   """+str(user_id)+""",
                    '"""+game+"""',
                    '"""+mode+"""',
                    '"""+day+"""',
                    '"""+hour+"""',
                    '"""+psnid+"""',
+                   '("""+info+""")',
                    (SELECT datetime(\'now\')))"""
     try:
         cursor.execute(sql)
@@ -185,12 +190,12 @@ def insert_player(chatid, userid, game, mode, day, hour, psnid):
         con.close()
         return('del_player')
 
-def delete_player(chatid, userid, game, mode, day, hour, psnid):
+def delete_player(user_id, day, hour, psnid):
     """Function to delete players"""
     con = sqlite3.connect(DB_PATH)
     cursor = con.cursor()
     check = exec_sql("""SELECT COUNT(*) FROM fireteams WHERE
-                   userid = """+str(userid)+""" AND
+                   userid = """+str(user_id)+""" AND
                    day = '"""+day+"""' AND
                    hour = '"""+hour+"""' AND
                    psnid = '"""+psnid+"""'""")
@@ -199,7 +204,7 @@ def delete_player(chatid, userid, game, mode, day, hour, psnid):
         return('El jugador debe ser eliminado por quien le registró.')
     
     sql = """DELETE FROM fireteams WHERE
-                   userid = """+str(userid)+""" AND
+                   userid = """+str(user_id)+""" AND
                    day = '"""+day+"""' AND
                    hour = '"""+hour+"""' AND
                    psnid = '"""+psnid+"""'"""
@@ -225,7 +230,7 @@ def fireteams(words, chat_id, user_id):
     
     if data:
         init_table()
-        game, mode, day, hour, psnid = get_values(data)
+        game, mode, day, hour, psnid, info = get_values(data)
         
         if not game:
                 game = get_game(chat_id)
@@ -240,10 +245,10 @@ def fireteams(words, chat_id, user_id):
             elif not psnid:
                 return('PSNid incorrecto.')
             
-            result = insert_player(chat_id, user_id, game, mode, day, hour, psnid)
+            result = insert_player(chat_id, user_id, game, mode, day, hour, psnid, info)
             
             if result == 'del_player':
-                result = delete_player(chat_id, user_id, game, mode, day, hour, psnid)
+                result = delete_player(user_id, day, hour, psnid)
 
         return(result)
 
