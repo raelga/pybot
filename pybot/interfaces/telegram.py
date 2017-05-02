@@ -33,7 +33,7 @@ LOG = logging.getLogger(__name__)
 
 def update_yourself(bot, update):
     "Pulls the git repo to update its own code."
-    output = check_output(["git", "pull"]).decode("utf-8")
+    output = check_output(["git", "pull", "https://github.com/raelga/pybot"]).decode("utf-8")
     reload(brain)
 
     LOG.info(output)
@@ -162,7 +162,7 @@ def communicate(bot, update, thoughts):
 def speak(bot, update, words, language=None):
     "Handler for bot text responses."
 
-    LOG.info('I\'ve got something to say.')
+    LOG.info('I\'ve got something to say: %s' % words)
 
     if language:
 
