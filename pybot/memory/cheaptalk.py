@@ -40,25 +40,11 @@ TEXT = [
 
 SKYNET_EMOJIS = ['\U0001f440', '\U0001f60e', '\U0001f60f']
 
-
-def see(photo):
-    "Implements hear to receive the image and execute the plugin logic"
-
-    return {
-        1: random.choice(EMOJIS) * random.randint(1, 3),
-        2: random.choice(ASCII_ARTS),
-    }.get(random.randint(1, 16), None)
-
-
 def hear(words):
     "Implements hear to receive the messages and execute the plugin logic"
 
     if re.search(r'.*skynet.*', words, re.I | re.M):
         return random.choice(SKYNET_EMOJIS) * random.randint(1, 3)
-
-    return {
-        1: random.choice(TEXT),
-    }.get(random.randint(1, 5000), None)
 
 
 def main(argv):
