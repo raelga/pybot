@@ -18,7 +18,7 @@ usage:            ## Show this help
 
 setup-venv:       ## Setup virtualenv
 	(test `which virtualenv` || pip install virtualenv || sudo pip install virtualenv)
-	(test -e $(VENV_DIR) || virtualenv $(VENV_DIR))
+	(test -e $(VENV_DIR) || virtualenv -p python3 $(VENV_DIR))
 	($(VENV_RUN) && pip install --upgrade pip)
 	(test ! -e requirements.txt || ($(VENV_RUN) && pip install -r requirements.txt))
 
