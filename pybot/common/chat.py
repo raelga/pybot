@@ -32,3 +32,7 @@ class Chat(object):
         self.chat_type = chat_type
         # Optionals
         self.chat_name = chat_name
+
+    def __repr__(self):
+        from pprint import pformat
+        return pformat(vars(self), indent=4, width=1)

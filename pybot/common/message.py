@@ -47,3 +47,7 @@ class Message(object):
         self.chat = chat
         # Optionals
         self.media = media
+
+    def __repr__(self):
+        from pprint import pformat
+        return pformat(vars(self), indent=4, width=1)

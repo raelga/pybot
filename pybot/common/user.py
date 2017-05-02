@@ -52,3 +52,7 @@ class User(object):
         if self.last_name:
             return '%s %s' % (self.first_name, self.last_name)
         return self.first_name
+
+    def __repr__(self):
+        from pprint import pformat
+        return pformat(vars(self), indent=4, width=1)

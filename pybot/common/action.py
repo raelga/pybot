@@ -40,3 +40,7 @@ class Action(object):
         # Optionals
         self.markup = markup
         self.payload = payload
+
+    def __repr__(self):
+        from pprint import pformat
+        return pformat(vars(self), indent=4, width=1)
