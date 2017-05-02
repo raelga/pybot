@@ -37,7 +37,7 @@ def command_help(words):
     if subject in help_messages:
         return '\n'.join(help_messages[subject])
 
-    return "No help available for subject ", subject
+    return "No help available for subject _%s_" % subject
 
 
 def help(message):
