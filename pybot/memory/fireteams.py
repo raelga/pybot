@@ -1,265 +1,582 @@
+#!/usr/bin/env python
+# pylint: disable=I0011,R0903,R0913
+# -*- coding: utf-8 -*-
+"""
+ fireteams.py   Help information about the different commands.
+ Author:        David @davlopgom
+ Date:          04/2017
+ Tested on:     Python 3 / OS X 10.11.5
+"""
+
 import time
 import os
 import sys
-import re
 import sqlite3
+import dateparser
+from pybot.common.action import Action
 
-INIT_PATH = '.raids'
-DB_PATH = INIT_PATH + '/pybot'
+DB_FILE = os.path.join(os.path.dirname(__file__), "fireteams.sqlite")
+VALID_ACTIONS = ['new', 'view', 'join', 'leave', 'check']
 
-indent = ' '
 
-def date_parser(date):
-    """Function to parse the date to an universal format"""
-    date = date.replace('-', ' ').replace('/', ' ')
-    if re.search(r'(\d{4}$)', date):
-        conv = time.strptime(date, "%d %m %Y")
-    else:
-        conv = time.strptime(date, "%d %m %y")
-    date = time.strftime("%d/%m/%Y", conv)
-    return(date)
+class FireteamsCmd(object):
+    """Represent an fireteams command definition."""
 
-def hour_parser(hour):
-    """Function to parse the hour to an universal format"""
-    if ':' in hour:
-        conv = time.strptime(hour, "%H:%M")
-    else:
-        conv = time.strptime(hour, "%H")
-    hour = time.strftime("%H:%M", conv)
-    return(hour)
+    def __init__(self,
+                 handler,
+                 action,
+                 chat_id,
+                 user_id,
+                 activity=None,
+                 username=None):
 
-def get_game(chat_id):
-    """Function to get game by chat, you have to set the properly id"""
-    cg_matrix = [(37284770,'destiny'),
-                (54322,'division')]
-    for c, g in cg_matrix:
-        if c == chat_id:
-            game = g
-            return(game)
+        # Required
+        self.handler = handler
+        self.action = action
+        self.chat_id = chat_id
+        self.user_id = user_id
+        self.activity = activity
+        self.username = username
 
-def get_values(data):
-    """Function to get the values"""
-    game = None
-    day = None
-    mode = ''
-    hour = None
-    psnid = None
-    info = ''
+    def __repr__(self):
+        from pprint import pformat
+        return pformat(vars(self), indent=4, width=1)
 
-    d = re.search( r'(\d+(?:-|\/)\d+(?:-|\/)\d+)', data, re.I) #Search the date
-    if d:
-        day = date_parser(d.group(1))
-        h = re.search( r'(?:\d+(?:-|\/)\d+(?:-|\/)\d+)\s+(\S+)', data, re.I) #Search the hour based on date
-        if h:
-            hour = hour_parser(h.group(1))
-        p = re.search( r'(?:\d+(?:-|\/)\d+(?:-|\/)\d+)\s+(?:\S+)\s+(\S+)', data, re.I) #Search the psnid based on date and hour
-        if p:
-            psnid = p.group(1).lower()
-        m = re.search( r'(.+)\s+(?:\d+(?:-|\/)\d+(?:-|\/)\d+)', data, re.I) #Search the mode based on date
-        if m:
-            mode = m.group(1).lower()
-        i = re.search( r'(?:\d+(?:-|\/)\d+(?:-|\/)\d+)\s+(?:\S+)\s+(?:\S+)\s+(.+)', data, re.I) #Search aditional info based on date, hour and psnid
-        if i:
-            info = i.group(1).lower()
 
-    return(game, mode, day, hour, psnid, info)
+class Activity(object):
+    """Represent an activity definition."""
 
-def init_table():
-    """Function to create the init DB and table if doesn't exists"""
-    if not os.path.exists(INIT_PATH):
-        os.makedirs(INIT_PATH)
-    con = sqlite3.connect(DB_PATH)
-    cursor = con.cursor()
-    cursor.execute("""CREATE TABLE IF NOT EXISTS fireteams
-                   (chatid INTEGER NOT NULL,
-                    userid INTEGER NOT NULL,
-                    game TEXT NOT NULL,
-                    mode TEXT,
-                    day TEXT NOT NULL,
-                    hour TEXT NOT NULL,
-                    psnid TEXT NOT NULL,
-                    info TEXT,
-                    timestamp TEXT NOT NULL,
-                    UNIQUE (day, hour, psnid))""")
-    con.commit()
-    con.close()
+    def __init__(self,
+                 date,
+                 hour,
+                 name,
+                 description):
 
-def exec_sql(sql):
-    """Function to execute an sql command"""
-    con = sqlite3.connect(DB_PATH)
-    cursor = con.cursor()
-    try:
-        cursor.execute(sql)
-        row = cursor.fetchall()
-        con.commit()
-        con.close()
-        return(row)
-    except:
-        con.close()
-        return()
+        # Required
+        self.date = date
+        self.hour = hour
+        self.name = name
+        self.description = description
 
-def fireteam_query(game, mode, day, hour):
-    """Function to query a fireteam"""
-    result = []
+    def __repr__(self):
+        from pprint import pformat
+        return pformat(vars(self), indent=4, width=1)
 
-    if mode:
-        append_sql = "and mode = '"+mode+"'"
-    else:
-        append_sql = 'and mode = ""'
 
-    if not day:
-        return('Día incorrecto.')
-    else:
-        sql = ''
-        result.append(day)
-        if not hour:
-            sql = """select distinct hour from fireteams where day = '"""+day+"""' and game = '"""+game+"""' order by hour"""
-            hours = exec_sql(sql)
-            for hour in hours:
-                result.append(indent*1 + hour[0])
-                if not mode:
-                    sql = """select distinct mode from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour[0]+"""' order by mode"""
-                    modes = exec_sql(sql)
-                    for mode in modes:
-                        if mode[0]:
-                            result.append(indent*2 + mode[0].upper())
-                        sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour[0]+"""' and mode = '"""+mode[0]+"""' order by timestamp"""
-                        rows = exec_sql(sql)
-                        for row in rows:
-                            result.append(indent*3 + row[0] + indent*1 + row[1])
-                        result.append('')
-                else:
-                    result.append(indent*2 + mode.upper())
-                    sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour[0]+"""' """+append_sql+""" order by timestamp"""
-                    rows = exec_sql(sql)
-                    for row in rows:
-                        result.append(indent*3 + row[0] + indent*1 + row[1])
+#
+# Fireteams actions
+#
+
+
+def __fireteams_check():
+    """"Initialize the database, creating the tables if missing."""
+
+    return __initialize_database()
+
+
+def __fireteams_view(chat_id, activity):
+    """"Method to list activities."""
+
+    activities = __db_select('activity_id, date, hour, name, description',
+                             'activities', chat_id, name=activity.name,
+                             date=activity.date, hour=activity.hour,
+                             order='date, hour, name')
+
+    if not activities:
+        return ('No activities available for %s %s.'
+                % (activity.date, activity.hour))
+
+    output = []
+
+    output.append('#\n# Activities\n#')
+    output.append('')
+
+    for act in activities:
+
+        output.append('*%s %s %s*' %
+                      (act[1], act[2], __mdsafe(act[3])))
+
+        if act[4]:
+            output.append('_%s_' % (__mdsafe(act[4])))
+
+        output.append('-')
+
+        fireteams = __db_select('username', 'fireteams',
+                                chat_id, activity_id=act[0], order='timestamp')
+        if fireteams:
+            pos = 1
+            for fireteam in fireteams:
+                output.append('*%d* - %s' %
+                              (pos, __mdsafe(fireteam[0])))
+                pos = pos + 1
         else:
-            result.append(indent*1 + hour)
-            if not mode:
-                sql = """select distinct mode from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour+"""' order by mode"""
-                modes = exec_sql(sql)
-                for mode in modes:
-                    if mode[0]:
-                        result.append(indent*2 + mode[0].upper())
-                    sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour+"""' and mode = '"""+mode[0]+"""' order by timestamp"""
-                    rows = exec_sql(sql)
-                    for row in rows:
-                        result.append(indent*3 + row[0] + indent*1 + row[1])
-                    result.append('')
-            else:
-                result.append(indent*2 + mode.upper())
-                sql = """select psnid, info from fireteams where day = '"""+day+"""' and game = '"""+game+"""' and hour = '"""+hour+"""' """+append_sql+""" order by timestamp"""
-                rows = exec_sql(sql)
-                for row in rows:
-                    result.append(indent*3 + row[0] + indent*1 + row[1])
+            output.append('_Nobody_')
 
-    return('\n'.join(result))
+        output.append('')
 
-def insert_player(chat_id, user_id, game, mode, day, hour, psnid, info):
-    """Function to insert players"""
-    con = sqlite3.connect(DB_PATH)
-    cursor = con.cursor()
-    sql = """INSERT INTO fireteams
-                   (chatid, 
-                   userid, 
-                   game,
-                   mode,
-                   day,  
-                   hour,
-                   psnid,
-                   info,
-                   timestamp)
-                   VALUES
-                   ("""+str(chat_id)+""",
-                   """+str(user_id)+""",
-                   '"""+game+"""',
-                   '"""+mode+"""',
-                   '"""+day+"""',
-                   '"""+hour+"""',
-                   '"""+psnid+"""',
-                   '("""+info+""")',
-                   (SELECT datetime(\'now\')))"""
+    return '\n'.join(output)
+
+
+def __fireteams_new(chat_id, user_id, activity):
+    """Method create a new empty activity"""
+
+    if not activity.date \
+            or not activity.hour \
+            or not activity.name:
+        return 'You must provide date, time and name for the activity.'
+
+    if __get_activity_id(chat_id, activity):
+        return ('Activity _%s %s %s_ already exists.'
+                % (activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    if __store_activity(chat_id, user_id, activity):
+        return ('Activity _%s %s %s_ added.'
+                % (activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    return 'Unable to create the new activity.'
+
+
+def __fireteams_join(chat_id, user_id, activity, username):
+    """Method to add players to a fireteam."""
+
+    activity_id = __get_activity_id(chat_id, activity)
+
+    if not activity_id:
+        return ('Activity _%s %s %s_ does not exists.'
+                % (activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    if __check_activity_user(chat_id, user_id, activity_id):
+        return ('%s already joined to _%s %s %s_.'
+                % (__mdsafe(username),
+                   activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    if __store_player(chat_id, user_id, username, activity_id):
+        return ('%s joined _%s %s %s_ fireteam.'
+                % (__mdsafe(username),
+                   activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    return 'Unable to add the user to the activity.'
+
+
+def __fireteams_leave(chat_id, user_id, activity, username):
+    """Method to remove players from a fireteam."""
+
+    activity_id = __get_activity_id(chat_id, activity)
+
+    if not activity_id:
+        return ('Activity _%s %s %s_ does not exists.'
+                % (activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    if not __check_activity_user(chat_id, user_id, activity_id):
+        return ('%s not a member of _%s %s %s_.'
+                % (__mdsafe(username),
+                   activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    if __remove_player(chat_id, user_id, activity_id):
+        return ('%s left _%s %s %s_ fireteam.'
+                % (__mdsafe(username),
+                   activity.date, activity.hour,
+                   __mdsafe(activity.name)))
+
+    return 'Unable to remove the user from the activity.'
+
+
+def __fireteams_do(cmd):
+    """Method to dispatch the fireteams commands."""
+
+    if cmd.action == 'check':
+
+        return __fireteams_check()
+
+    if cmd.action == 'view':
+
+        return __fireteams_view(cmd.chat_id, cmd.activity)
+
+    if cmd.action == 'new':
+
+        return __fireteams_new(cmd.chat_id,
+                               cmd.user_id,
+                               cmd.activity)
+
+    if cmd.action == 'join':
+
+        return __fireteams_join(cmd.chat_id,
+                                cmd.user_id,
+                                cmd.activity,
+                                cmd.username)
+
+    if cmd.action == 'leave':
+
+        return __fireteams_leave(cmd.chat_id,
+                                 cmd.user_id,
+                                 cmd.activity,
+                                 cmd.username)
+
+    return None
+
+#
+# DB Helpers
+#
+
+
+def __initialize_database():
+    """Create the database file and tables."""
+    if __db_init():
+        return 'Database OK.'
+    else:
+        return 'Database KO.'
+
+
+def __store_activity(chat_id, user_id, activity):
+    """Store the activity in the database."""
+
+    dbh = __db_handler()
+    stored = False
+
     try:
-        cursor.execute(sql)
-        con.commit()
-        con.close()
-        return('Jugador añadido.')
-    except sqlite3.IntegrityError:
-        con.rollback()
-        con.close()
-        return('del_player')
+        cursor = dbh.cursor()
+        cursor.execute(
+            'INSERT INTO activities'
+            '(chat_id, user_id, name, description, date, hour)'
+            'VALUES'
+            '(?,?,?,?,?,?);',
+            (chat_id, user_id, activity.name,
+             activity.description, activity.date, activity.hour)
+        )
 
-def delete_player(user_id, day, hour, psnid):
-    """Function to delete players"""
-    con = sqlite3.connect(DB_PATH)
-    cursor = con.cursor()
-    check = exec_sql("""SELECT COUNT(*) FROM fireteams WHERE
-                   userid = """+str(user_id)+""" AND
-                   day = '"""+day+"""' AND
-                   hour = '"""+hour+"""' AND
-                   psnid = '"""+psnid+"""'""")
-    
-    if check[0][0] == 0:
-        return('El jugador debe ser eliminado por quien le registró.')
-    
-    sql = """DELETE FROM fireteams WHERE
-                   userid = """+str(user_id)+""" AND
-                   day = '"""+day+"""' AND
-                   hour = '"""+hour+"""' AND
-                   psnid = '"""+psnid+"""'"""
+        dbh.commit()
+
+        stored = True
+
+    except sqlite3.Error as err:
+        dbh.rollback()
+        print('SQLite error: %s' % (' '.join(err.args)))
+
+    dbh.close()
+    return stored
+
+
+def __store_player(chat_id, user_id, username, activity_id):
+    """Store the username in the database."""
+
+    dbh = __db_handler()
+    stored = False
+
     try:
-        cursor.execute(sql)
-        con.commit()
-        con.close()
-        return('Jugador eliminado.')
-    except:
-        con.rollback()
-        con.close()
-        return('Me encuentro mal...')
+        cursor = dbh.cursor()
+        cursor.execute(
+            'INSERT INTO fireteams'
+            '(chat_id, user_id, activity_id, username)'
+            'VALUES'
+            '(?,?,?,?);',
+            (chat_id, user_id, activity_id, username)
+        )
+
+        dbh.commit()
+
+        stored = True
+
+    except sqlite3.Error as err:
+        dbh.rollback()
+        print('SQLite error: %s' % (' '.join(err.args)))
+
+    dbh.close()
+    return stored
 
 
-def fireteams(words, chat_id, user_id):
-    """Function to manage fireteams"""
-    r = re.search( r'(?:^|^\/|^\@\S+:.+)\braid\b(.*)', words, re.I|re.M) #Edit mode
-    s = re.search( r'(?:^|^\/|^\@\S+:.+)\braid\b\s+\b(?:ver|mostrar)\b(.*)', words, re.I|re.M) #Search mode
-    if s:
-        data = s.group(1)
-    elif r:
-        data = r.group(1)
-    
-    if data:
-        init_table()
-        game, mode, day, hour, psnid, info = get_values(data)
-        
-        if not game:
-                game = get_game(chat_id)
+def __remove_player(chat_id, user_id, activity_id):
+    """Store the username in the database."""
 
-        if s:
-            result = fireteam_query(game, mode, day, hour)
-        else:
-            if not day:
-                return('Día incorrecto.')
-            elif not hour:
-                return('Hora incorrecta.')
-            elif not psnid:
-                return('PSNid incorrecto.')
-            
-            result = insert_player(chat_id, user_id, game, mode, day, hour, psnid, info)
-            
-            if result == 'del_player':
-                result = delete_player(user_id, day, hour, psnid)
+    dbh = __db_handler()
+    removed = False
 
-        return(result)
+    try:
+        cursor = dbh.cursor()
+        cursor.execute(
+            'DELETE FROM fireteams '
+            'WHERE chat_id = ? '
+            'AND user_id = ? '
+            'AND activity_id = ? ',
+            (chat_id, user_id, activity_id)
+        )
+
+        dbh.commit()
+
+        removed = True
+
+    except sqlite3.Error as err:
+        dbh.rollback()
+        print('SQLite error: %s' % (' '.join(err.args)))
+
+    dbh.close()
+    return removed
+
+
+def __get_activity_id(chat_id, activity):
+    """Retrieves, if exists in the database, the activity id for activity."""
+
+    activity_id = __db_select(
+        'activity_id', 'activities',
+        chat_id, name=activity.name,
+        date=activity.date, hour=activity.hour
+    )
+
+    if activity_id:
+        return activity_id[0][0]
+
+    return None
+
+
+def __check_activity_user(chat_id, user_id, activity_id):
+    """Retrieves, if exists in the database, the activity id for activity."""
+
+    return __db_select(
+        'user_id', 'fireteams',
+        chat_id, user_id=user_id, activity_id=activity_id
+    )
+
+
+def __db_handler():
+    """Method to create the DB connection."""
+
+    try:
+        return sqlite3.connect(DB_FILE)
+    except sqlite3.Error:
+        pass
+
+    return None
+
+
+def __db_init():
+    """Method to create the init DB and table if doesn't exists"""
+
+    dbh = __db_handler()
+    initialized = False
+
+    if dbh:
+
+        try:
+            cursor = dbh.cursor()
+            cursor.execute(
+                'CREATE TABLE IF NOT EXISTS activities('
+                'activity_id INTEGER, '
+                'chat_id INTEGER NOT NULL, '
+                'user_id INTEGER NOT NULL, '
+                'name TEXT NOT NULL, '
+                'description TEXT, '
+                'date TEXT NOT NULL, '
+                'hour TEXT NOT NULL, '
+                'timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, '
+                'UNIQUE(chat_id, date, hour, name), '
+                'PRIMARY KEY(activity_id ASC)'
+                ');'
+            )
+
+            cursor.execute(
+                'CREATE TABLE IF NOT EXISTS fireteams('
+                'fireteams_id INTEGER NOT NULL, '
+                'activity_id INTEGER NOT NULL, '
+                'chat_id INTEGER NOT NULL, '
+                'user_id INTEGER NOT NULL, '
+                'username TEXT NOT NULL, '
+                'timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, '
+                'UNIQUE (activity_id, chat_id, user_id), '
+                'PRIMARY KEY(fireteams_id ASC)'
+                ');'
+            )
+
+            dbh.commit()
+
+            initialized = True
+
+        except sqlite3.Error as err:
+            dbh.rollback()
+            print('SQLite error: %s' % (' '.join(err.args)))
+
+        dbh.close()
+
+        return initialized
+
+
+def __db_select(what, table, chat_id, order=None, **kwargs):
+    """Execute a select query with the arguments provided."""
+
+    sql = []
+    where = []
+    values = []
+
+    sql.append('SELECT %s' % what)
+    sql.append('FROM %s' % table)
+
+    where.append("WHERE chat_id = ?")
+    values.append(chat_id)
+
+    for column, value in kwargs.items():
+        if value:
+            where.append("%s = ?" % column)
+            values.append(value)
+
+    if where:
+        sql.append(' AND '.join(where))
+
+    if order:
+        sql.append('ORDER BY %s' % order)
+
+    return __db_execute_sql(' '.join(sql), values)
+
+
+def __db_execute_sql(query, values):
+    """Returns a recordset with the result of the sql query."""
+
+    dbh = __db_handler()
+    recordset = None
+
+    if dbh:
+        try:
+            cursor = dbh.cursor()
+            cursor.execute(query, values)
+            recordset = cursor.fetchall()
+            dbh.commit()
+
+        except sqlite3.Error as err:
+            dbh.rollback()
+            print('SQLite error: %s' % (' '.join(err.args)))
+
+    dbh.close()
+
+    return recordset
+
+
+#
+# Parsers
+#
+
+
+def __parse_date(date):
+    """Method to parse the date to an common format"""
+
+    try:
+        return dateparser.parse(
+            date,
+            settings={'PREFER_DATES_FROM': 'future',
+                      'DATE_ORDER': 'DMY'}
+        ).strftime("%d-%m-%Y")
+
+    except ValueError:
+        return None
+
+
+def __parse_time(hour):
+    """Method to parse the hour to an common format"""
+
+    hour = hour + ':00' if ':' not in hour else hour
+
+    try:
+        return dateparser.parse(
+            hour,
+            settings={'PREFER_DATES_FROM': 'future'}
+        ).strftime("%H:%M")
+
+    except ValueError:
+        return None
+
+
+def __parse_message(message):
+    """Parses the user message to retrieve the action to execute"""
+
+    words = message.text.split()
+
+    if len(words) == 1:
+        return (
+            'Usage: *%s* [ %s ] _[ date ] [ hour ] [ name ] [ description ]_'
+            % (words[0], ' | '.join(VALID_ACTIONS))
+        )
+
+    handler = words[0]
+
+    action = words[1] if words[1] in VALID_ACTIONS else 'view'
+    date = __parse_date(words[2]) if len(words) > 2 else __parse_date('today')
+    hour = __parse_time(words[3]) if len(words) > 3 else None
+    name = words[4] if len(words) > 4 else None
+    description = ' '.join(words[5:]) if len(words) > 5 else None
+
+    username = message.user.name
+    fireteam = Activity(date, hour, name, description)
+
+    return FireteamsCmd(handler, action,
+                        message.chat.chat_id,
+                        message.user.user_id,
+                        fireteam, username)
+
+#
+# Misc
+#
+
+
+def __mdsafe(text):
+    """Escape unsafe Markdown characters."""
+    return text.replace("_", r"\_")
+
+#
+# Invocation handlers
+#
+
+
+def __fireteams_handler(message):
+    """Method to handle fireteams"""
+
+    cmd = __parse_message(message)
+
+    if not isinstance(cmd, FireteamsCmd):
+        return Action(
+            name='new_message',
+            target=message.chat.chat_id,
+            text=cmd,
+            markup='markdown'
+        )
+
+    else:
+        return Action(
+            name='new_message',
+            target=message.chat.chat_id,
+            text=__fireteams_do(cmd),
+            markup='markdown'
+        )
+
+
+def kdd(message):
+    "This allows to respond to /kdd command."
+    return __fireteams_handler(message)
+
 
 def raid(message):
-    return fireteams(message.text, message.chat.chat_id, message.user.user_id)
+    "This allows to respond to /kdd command."
+    return __fireteams_handler(message)
+
 
 def main(argv):
-    if len(sys.argv)>1:
-        print(hear(' '.join(sys.argv)))
+    "This allows to execute the plugin in standalone mode"
+    if len(argv) > 1:
+
+        from pybot.common.message import Message
+        from pybot.common.user import User
+        from pybot.common.chat import Chat
+        user = User(1, 'foo', 'bar', 'rael')
+        chat = Chat(1, 'Console', 'Console')
+        message = Message(1, user, time.strftime,
+                          ' '.join(sys.argv[1:]), chat, None)
+        print(kdd(message))
+
     else:
         print('I heard nothing.')
+
 
 if __name__ == "__main__":
     main(sys.argv)
