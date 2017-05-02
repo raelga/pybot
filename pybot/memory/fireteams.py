@@ -82,9 +82,13 @@ def __fireteams_view(chat_id, activity):
                              date=activity.date, hour=activity.hour,
                              order='date, hour, name')
 
-    if not activities:
-        return ('No activities available for %s %s.'
+    if not activities and activity.hour:
+        return ('No activities available for %s at %s.'
                 % (activity.date, activity.hour))
+
+    if not activities:
+        return ('No activities available for %s.'
+                % (activity.date))
 
     output = []
 
@@ -476,9 +480,8 @@ def __parse_date(date):
 def __parse_time(hour):
     """Method to parse the hour to an common format"""
 
-    hour = hour + ':00' if ':' not in hour else hour
-
     try:
+        hour = hour + ':00' if ':' not in hour else hour
         return dateparser.parse(
             hour,
             settings={'PREFER_DATES_FROM': 'future'}
@@ -488,20 +491,32 @@ def __parse_time(hour):
         return None
 
 
+def __usage(handler):
+    """Prints usage information with the handler command."""
+    return (
+        'Usage: *%s* [ %s ] _[ date ] [ hour ] [ name ] [ description ]_'
+        % (handler, ' | '.join(VALID_ACTIONS))
+    )
+
+
 def __parse_message(message):
     """Parses the user message to retrieve the action to execute"""
 
     words = message.text.split()
 
-    if len(words) == 1:
-        return (
-            'Usage: *%s* [ %s ] _[ date ] [ hour ] [ name ] [ description ]_'
-            % (words[0], ' | '.join(VALID_ACTIONS))
-        )
+    if not words:
+        return None
 
     handler = words[0]
 
-    action = words[1] if words[1] in VALID_ACTIONS else 'view'
+    if len(words) < 2:
+        return __usage(handler)
+
+    action = words[1]
+
+    if action not in VALID_ACTIONS:
+        return __usage(handler)
+
     date = __parse_date(words[2]) if len(words) > 2 else __parse_date('today')
     hour = __parse_time(words[3]) if len(words) > 3 else None
     name = words[4] if len(words) > 4 else None
