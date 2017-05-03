@@ -145,6 +145,11 @@ def __fireteams_new(chat_id, user_id, activity):
 def __fireteams_join(chat_id, user_id, activity, username):
     """Method to add players to a fireteam."""
 
+    if not activity.date \
+            or not activity.hour \
+            or not activity.name:
+        return 'You must provide date, time and name for the activity.'
+
     activity_id = __get_activity_id(chat_id, activity)
 
     if not activity_id:
@@ -171,6 +176,11 @@ def __fireteams_leave(chat_id, user_id, activity, username):
     """Method to remove players from a fireteam."""
 
     activity_id = __get_activity_id(chat_id, activity)
+
+    if not activity.date \
+            or not activity.hour \
+            or not activity.name:
+        return 'You must provide date, time and name for the activity.'
 
     if not activity_id:
         return ('Activity _%s %s %s_ does not exists.'
