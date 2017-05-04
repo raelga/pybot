@@ -1,11 +1,16 @@
 {
-    "help": ["To obtain help about a particular command or funcionality, use '/help *command*'.", 
-    "Available helpers:", "- trophies",
-    "",
-    "Issues or requests to @raelga. Code available in [github/raelga/pybot](https://github.com/raelga/pybot)"],
-    "raid": ["Para apuntarte o eliminarte de una raid debes escribir '/raid *modo(es opcional, lo propio es poner actividad y/o dificultad)* *fecha(DD-MM-AA)* *hora* *psnid*'.",
-        "También puedes ver las convocatorias escribiendo '/raid ver/mostrar *modo* *fecha* *hora*'.",
-        "Ejemplos:", "/raid 28/04/17 10:00 raelga", "/raid hard 28-04-2017 12:00 raelga", "/raid atheon hard 28-04-2017 16:00 raelga", "/raid ver 28/04/17", "/raid ver hard 28-04-2017 10:00"
+    "help": ["To obtain help about a particular command or funcionality, use '/help *command*'.",
+        "Available helpers:", "- trophies", "- kdd",
+        "",
+        "Issues or requests to @raelga. Code available in [github/raelga/pybot](https://github.com/raelga/pybot)"
+    ],
+    "kdd": [
+        "Ejemplos de uso del comando para quedadas:",
+        "/kdd new hoy 10:00 atheon descripcion  - _Crear la convocatoria atheon de hoy a las 10:00 con la descripción sobre que se va a hacer._ ",
+        "/kdd join hoy 10:00 atheon - _Unirse a la convocatoria atheon de hoy a las 10:00._ ",
+        "/kdd leave hoy 10:00 atheon - _Abandonar la convocatoria atheon de hoy a las 10:00._ ",
+        "/kdd view hoy 10:00 atheon - _Ver la convocatoria atheon de hoy a las 10:00._",
+        "/kdd view hoy  - _Ver las convocatorias de hoy. _"
     ],
     "trophies": ["Para listar los trofeo de PSN de un usuario, debes escribir /trofeos *psnid*",
         "Ejemplos:", "/perfil raelga"
