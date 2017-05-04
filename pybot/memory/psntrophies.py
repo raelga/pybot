@@ -48,8 +48,6 @@ def hear(words):
     data = re.search(r'(^|.*)trophies ([A-Za-z0-9_-]+).*', words, re.I | re.M)
     if data:
         return psntrophies(data.groups()[1])
-    else:
-        return "Usage: /trophies PSNID"
 
     data = re.search(r'^perfil ([A-Za-z0-9_-]+).*', words, re.I | re.M)
     if data:
