@@ -33,11 +33,6 @@ def __get_message(event, groupid):
     return
 
 
-def __mdsafe(text):
-    """Escape unsafe Markdown characters."""
-    return text.replace("_", r"\_")
-
-
 def user_entering(message):
 
     custom_message = __get_message(
@@ -67,7 +62,7 @@ def user_leaving(message):
         return Action(
             name='new_message',
             target=message.chat.chat_id,
-            text=__mdsafe(custom_message),
+            text=custom_message,
             markup='markdown'
         )
 
