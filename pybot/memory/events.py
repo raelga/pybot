@@ -44,7 +44,7 @@ def user_entering(message):
         return Action(
             name='new_message',
             target=message.chat.chat_id,
-            text=__mdsafe(custom_message),
+            text=custom_message,
             markup='markdown'
         )
 
@@ -80,7 +80,8 @@ def main():
         chat = Chat(-1001082983975, 'Console', 'Console')
         message = Message(1, user, time.strftime,
                           ' '.join(sys.argv[1:]), chat, None)
-        print(psnids(message))
+        print(user_entering(message))
+        print(user_leaving(message))
 
     else:
         print('I heard nothing.')
