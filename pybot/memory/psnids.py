@@ -28,8 +28,8 @@ def __list_psnids(groupid):
     if psnid_list is None:
         return
 
-    if groupid in psnid_list:
-        return '\n'.join(psnid_list["-1001082983975"])
+    if str(groupid) in psnid_list:
+        return '\n'.join(psnid_list[str(groupid)])
 
     return
 
