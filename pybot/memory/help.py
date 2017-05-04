@@ -21,7 +21,7 @@ HELP_FILE = os.path.join(os.path.dirname(__file__), "help.json")
 def command_help(words):
     "Responds with information about a subject."
 
-    command = re.search(r'.?(help)\s*(\w*)\s*$', words, re.I | re.M)
+    command = re.search(r'.?(help)[\w\@]*\s*(\w*)\s*$', words, re.I | re.M)
 
     if command is None:
         return
