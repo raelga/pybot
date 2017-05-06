@@ -11,7 +11,7 @@ import logging
 import os
 import re
 from importlib import reload
-from subprocess import check_output
+from subprocess import Popen, PIPE, TimeoutExpired
 
 import requests
 import telegram
@@ -31,19 +31,56 @@ logging.basicConfig(
 LOG = logging.getLogger(__name__)
 
 
+def kill_process(pid):
+
+    pgrp = os.getpgid(pid)
+    os.killpg(pgrp, signal.SIGINT)
+    out = check_output(["ps", "auxf"])
+    print(out.decode('utf-8'))
+
+
 def update_yourself(bot, update):
     "Pulls the git repo to update its own code."
-    output = check_output(["git", "pull", "https://github.com/raelga/pybot"]).decode("utf-8")
-    reload(brain)
 
-    LOG.info(output)
-    bot.sendMessage(update.message.chat_id, text=output)
+    repo_url = "git://github.com/raelga/pybot"
+    repo_branch = "master"
+
+    if os.environ['GITHUB_REPO']:
+        repo_url = os.environ['GITHUB_REPO']
+
+    if os.environ['GITHUB_BRANCH']:
+        repo_branch = os.environ['GITHUB_BRANCH']
+
+    try:
+
+        update_cmd = ['git', 'pull', repo_url, repo_branch]
+        proc = Popen(update_cmd, stdout=PIPE,
+                     stderr=PIPE, preexec_fn=os.setsid)
+
+        out, err = proc.communicate(timeout=5)
+
+    except TimeoutExpired as exception:
+        LOG.error(exception)
+        proc.kill()
+        response = "Ignoring updatem, execution timed out."
+    except OSError as exception:
+        LOG.error(exception)
+    else:
+        response = out.decode('utf-8')
+        reload(brain)
+
+    if response:
+        speak(bot, update, response)
+    else:
+        if err:
+            LOG.error(err.decode('utf-8'))
+        speak(bot, update, "Ignoring update, something went wrong.")
 
 
 def error(bot, update, error_message):
     "Error handler function"
-    LOG.warning('Update "%s" caused error "%s" for %s',
-                update, error_message, bot.id)
+    LOG.error('Update "%s" caused error "%s" for %s',
+              update, error_message, bot.id)
 
 
 def message_from_update(update, media=None):
