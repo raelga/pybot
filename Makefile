@@ -51,6 +51,9 @@ docker-build:     ## Build the docker image for running pybot
 docker-telegram:  ## Run with telegram adapter in the docker container
 	$(DOCKER_RUN) $(PYBOT_TELEGRAM)
 
+docker-bash:      ## Run bash in the docker container
+	$(DOCKER_RUN) bash
+
 docker-lint:      ## Run pep8 in the docker container
 	$(DOCKER_RUN) $(PYTHON_LINT)
 
