@@ -30,14 +30,17 @@ def __psntrophies(psnid):
     completed = 0
     info = "Recent games played:\n\n"
 
-    for g in range(games):
-        if g <= 5:
-            info += "👾  " + data['list'][g]['title'] + \
-                " (" + repr(data['list'][g]['progress']) + "%)\n"
-        if data['list'][g]['progress'] == 100:
+    for game in range(games):
+        if game <= 5:
+            info += "👾  " + data['list'][game]['title'] + \
+                " (" + repr(data['list'][game]['progress']) + "%)\n"
+        if data['list'][game]['progress'] == 100:
             completed += 1
-        if data['list'][g]['trophies']['platinum'] == 1:
+        if data['list'][game]['trophies']['platinum'] == 1:
             platinum += 1
+
+    if not games:
+        info = "No games available, check the user privacy settings."
 
     summary = "*" + psnid + "*\n" + repr(platinum) + \
         " platinums (" + repr(completed) + " 100%s)"
@@ -53,11 +56,6 @@ def __usage(handler):
     )
 
 
-def __mdsafe(text):
-    """Escape unsafe Markdown characters."""
-    return text.replace("_", r"\_")
-
-
 def ___message_handler(message):
     """Parses the user message call the psnprofiles method if valid"""
 
@@ -71,7 +69,7 @@ def ___message_handler(message):
     if len(words) < 2:
         response = __usage(handler)
     else:
-        response = __mdsafe(__psntrophies(words[1]))
+        response = __psntrophies(words[1])
 
     return Action(
         name='new_message',
@@ -91,7 +89,7 @@ def trophies(message):
     return ___message_handler(message)
 
 
-def main(argv):
+def main():
     "This allows to execute the plugin in standalone mode"
     if len(sys.argv) > 1:
 
