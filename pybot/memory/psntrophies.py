@@ -8,6 +8,7 @@
 
 from urllib import request as r
 import json
+import re
 import sys
 import time
 from pybot.common.action import Action
@@ -46,7 +47,8 @@ def __psntrophies(psnid):
         bronze += data['list'][game]['trophies']['bronze']
 
     if not games:
-        info = "No games available, check the %s privacy settings."
+        return "No information available for *" + psnid + "*," + \
+            "check the user privacy settings."
     else:
         level = data['curLevel']
 
@@ -91,6 +93,12 @@ def ___message_handler(message):
         text=response,
         markup='markdown'
     )
+
+
+def __escape_markdown(text):
+    """Helper function to escape telegram markup symbols"""
+    escape_chars = r'\*_`\['
+    return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
 
 def perfil(message):
