@@ -125,7 +125,7 @@ def hear(bot, update):
 
     if cmd:
 
-        interact(bot, update, cmd.groups()[1])
+        interact(bot, update, cmd.groups()[1].lower())
 
     else:
 
