@@ -15,8 +15,9 @@ from pybot.common.action import Action
 
 def __psntrophies(psnid):
 
-    url = "http://psn.rael.io/api/playstation/profile/"
-    headers = {"User-Agent": "raelbot"}
+    url = "https://io.playstation.com/playstation/psn/public/trophies/?onlineId="
+    headers = {"Referer": "https://www.playstation.com/en-us/my/compare-game-trophies",
+               "User-Agent": "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)"}
 
     req = r.Request(url + psnid, None, headers)
     resp = r.urlopen(req)
