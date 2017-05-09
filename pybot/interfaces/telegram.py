@@ -12,11 +12,13 @@ import os
 import re
 from importlib import reload
 from subprocess import Popen, PIPE, TimeoutExpired
+from uuid import uuid4
 
 import requests
 import telegram
 from telegram.ext import (CallbackQueryHandler, CommandHandler, Filters,
-                          MessageHandler, Updater)
+                          MessageHandler, InlineQueryHandler, Updater,
+                          )
 
 import pybot.brain as brain
 from pybot.common.action import Action
@@ -29,14 +31,6 @@ logging.basicConfig(
     level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
-
-
-def kill_process(pid):
-
-    pgrp = os.getpgid(pid)
-    os.killpg(pgrp, signal.SIGINT)
-    out = check_output(["ps", "auxf"])
-    print(out.decode('utf-8'))
 
 
 def update_yourself(bot, update):
@@ -140,6 +134,7 @@ def hear(bot, update):
 
 def view(bot, update):
     "Function to handle photo messages."
+    LOG.info(update)
 
     url = bot.getFile(
         update.message.photo[-1].file_id).file_path
@@ -152,7 +147,7 @@ def view(bot, update):
 
 
 def listen(bot, update):
-    "Function to handle photo messages."
+    "Function to voice messages."
     url = bot.getFile(update.message.voice.file_id).file_path
 
     thoughts = brain.interact('listen', message_from_update(update, url))
@@ -273,7 +268,55 @@ def edit(bot, update, text, reply_markup=None):
 
 def callback_handler(bot, update):
     """Function to handle the telegram callbacks"""
+    LOG.info(update)
     interact(bot, update.callback_query, update.callback_query.data)
+
+
+def inlinequery_handlder(bot, update):
+    """Function to handle the telegram inline queries"""
+    LOG.info(update)
+
+    # gphoto = bot.getUserProfilePhotos(
+    #    update.message.chat.id,
+    #    limit=1,
+    #    timeout=2
+    #    )
+    # LOG.info(gphoto)
+
+    query = update.inline_query.query
+    results = list()
+
+    results.append(
+        telegram.InlineQueryResultArticle(
+            id=uuid4(),
+            title="Hoy 20:30 Atheon",
+            description="bla bla bla, 2 apuntados.",
+            thumb_url="http://monstervine.com/wp-content/uploads/2013/05/destiny-logo.jpeg",
+            input_message_content=telegram.InputTextMessageContent(
+                "!kdd join hoy 22:30 atheon"
+            )
+        )
+    )
+
+    results.append(
+        telegram.InlineQueryResultArticle(
+            id=uuid4(),
+            title="Hoy 20:30 Atheon",
+            description="bla bla bla, 4 apuntados.",
+            thumb_url="http://monstervine.com/wp-content/uploads/2013/05/destiny-logo.jpeg",
+            input_message_content=telegram.InputTextMessageContent(
+                "!kdd join hoy 22:30 atheon"
+            )
+        )
+    )
+
+    update.inline_query.answer(
+        results,
+        switch_pm_text="Add a new activity.",
+        switch_pm_parameter="_test_id"
+    )
+
+    LOG.info(update)
 
 
 def execute(bot, update, action):
@@ -311,6 +354,24 @@ def execute(bot, update, action):
         elif action.text:
 
             speak(bot, update, action.text)
+
+    elif action.name == 'switch_pm':
+        # switch_inline_query_current_chat
+        menu = []
+        menu.append([])
+
+        tbut = telegram.InlineKeyboardButton(
+            'test',
+            switch_inline_query='test'
+        )
+        menu[0].append(tbut)
+        tmenu = telegram.InlineKeyboardMarkup(menu)
+
+        LOG.info(update)
+        bot.sendMessage(update.message.chat_id,
+                        text="test text",
+                        parse_mode=telegram.ParseMode.HTML,
+                        reply_markup=tmenu)
 
 
 def get_menu(data, columns=2):
@@ -352,6 +413,12 @@ def remember(bot, update, media=None):
     brain.remember(message_from_update(update, media=media))
 
 
+def __escape_markdown(text):
+    """Helper function to escape telegram markup symbols"""
+    escape_chars = '\*_`\['
+    return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
+
+
 def start():
     """Retrieves messages from the telegram API."""
 
@@ -366,6 +433,7 @@ def start():
     dispatcher.add_handler(MessageHandler(Filters.status_update, events))
     dispatcher.add_handler(CommandHandler("update_yourself", update_yourself))
     dispatcher.add_handler(CallbackQueryHandler(callback_handler))
+    dispatcher.add_handler(InlineQueryHandler(inlinequery_handlder))
 
     # Default handler
     dispatcher.add_handler(MessageHandler(Filters.all, hear))
