@@ -11,6 +11,7 @@ from __future__ import print_function
 
 import os
 import time
+import re
 import sys
 import json
 import io
@@ -34,9 +35,10 @@ def __list_psnids(groupid):
     return
 
 
-def __mdsafe(text):
-    """Escape unsafe Markdown characters."""
-    return text.replace("_", r"\_")
+def __escape_markdown(text):
+    """Helper function to escape telegram markup symbols"""
+    escape_chars = r'\*_`\['
+    return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
 
 def psnids(message):
@@ -48,7 +50,7 @@ def psnids(message):
         return Action(
             name='new_message',
             target=message.chat.chat_id,
-            text=__mdsafe(psnid_list),
+            text=__escape_markdown(psnid_list),
             markup='markdown'
         )
 

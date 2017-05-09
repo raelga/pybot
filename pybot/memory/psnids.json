@@ -38,5 +38,10 @@
         "👾 Xou - xou86",
         "👾 Yeray - yeray201103"
     ],
-    "-215289094": [ "Test group" ]
+    "-215289094": [ 
+        "Test group", 
+        "_Markdown_ *formated*", 
+        "[Markdown](link)",
+        "Unsafe Markdown: _ab [asd `af" 
+        ]
 }
