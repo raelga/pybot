@@ -49,15 +49,14 @@ def __psntrophies(psnid):
         info = "No games available, check the %s privacy settings."
     else:
         level = data['curLevel']
-        points = platinum * 180 + gold * 90 * silver * 30 + bronze * 15
 
         summary = '\n'.join(
             [
-                "*%s*" % (psnid),
-                "%s platinums (%s 100%%s)" % (platinum, completed),
+                "*%s* ⭐️ %s" % (psnid, level),
                 "",
-                "🥇 %s 🥈 %s 🥉 %s" % (gold, silver, bronze),
-                "⭐️ %s - %s points" % (level, points)
+                "🏆 %s platinums (%s 100%%s)" % (platinum, completed),
+                "",
+                "🥇 %s 🥈 %s 🥉 %s" % (gold, silver, bronze)
             ]
         )
 
