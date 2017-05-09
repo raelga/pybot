@@ -10,6 +10,7 @@
 
 import time
 import os
+import re
 import sys
 import sqlite3
 import dateparser
@@ -98,10 +99,10 @@ def __fireteams_view(chat_id, activity):
     for act in activities:
 
         output.append('*%s %s %s*' %
-                      (act[1], act[2], __mdsafe(act[3])))
+                      (act[1], act[2], __escape_markdown(act[3])))
 
         if act[4]:
-            output.append('_%s_' % (__mdsafe(act[4])))
+            output.append('_%s_' % (__escape_markdown(act[4])))
 
         output.append('-')
 
@@ -111,7 +112,7 @@ def __fireteams_view(chat_id, activity):
             pos = 1
             for fireteam in fireteams:
                 output.append('*%d* - %s' %
-                              (pos, __mdsafe(fireteam[0])))
+                              (pos, __escape_markdown(fireteam[0])))
                 pos = pos + 1
         else:
             output.append('_Nobody_')
@@ -132,12 +133,12 @@ def __fireteams_new(chat_id, user_id, activity):
     if __get_activity_id(chat_id, activity):
         return ('Activity _%s %s %s_ already exists.'
                 % (activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     if __store_activity(chat_id, user_id, activity):
         return ('Activity _%s %s %s_ added.'
                 % (activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     return 'Unable to create the new activity.'
 
@@ -155,19 +156,19 @@ def __fireteams_join(chat_id, user_id, activity, username):
     if not activity_id:
         return ('Activity _%s %s %s_ does not exists.'
                 % (activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     if __check_activity_user(chat_id, user_id, activity_id):
         return ('%s already joined to _%s %s %s_.'
-                % (__mdsafe(username),
+                % (__escape_markdown(username),
                    activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     if __store_player(chat_id, user_id, username, activity_id):
         return ('%s joined _%s %s %s_ fireteam.'
-                % (__mdsafe(username),
+                % (__escape_markdown(username),
                    activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     return 'Unable to add the user to the activity.'
 
@@ -185,19 +186,19 @@ def __fireteams_leave(chat_id, user_id, activity, username):
     if not activity_id:
         return ('Activity _%s %s %s_ does not exists.'
                 % (activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     if not __check_activity_user(chat_id, user_id, activity_id):
         return ('%s not a member of _%s %s %s_.'
-                % (__mdsafe(username),
+                % (__escape_markdown(username),
                    activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     if __remove_player(chat_id, user_id, activity_id):
         return ('%s left _%s %s %s_ fireteam.'
-                % (__mdsafe(username),
+                % (__escape_markdown(username),
                    activity.date, activity.hour,
-                   __mdsafe(activity.name)))
+                   __escape_markdown(activity.name)))
 
     return 'Unable to remove the user from the activity.'
 
@@ -545,9 +546,10 @@ def __parse_message(message):
 #
 
 
-def __mdsafe(text):
-    """Escape unsafe Markdown characters."""
-    return text.replace("_", r"\_")
+def __escape_markdown(text):
+    """Helper function to escape telegram markup symbols"""
+    escape_chars = r'\*_`\['
+    return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
 #
 # Invocation handlers
