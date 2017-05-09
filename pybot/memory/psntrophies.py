@@ -31,7 +31,7 @@ def __psntrophies(psnid):
     silver = 0
     bronze = 0
     completed = 0
-    info = "Recent games played:\n\n"
+    info = "_Recent games played_\n\n"
 
     for game in range(games):
         if game <= 5:
@@ -52,11 +52,10 @@ def __psntrophies(psnid):
 
         summary = '\n'.join(
             [
-                "*%s* ⭐️ %s" % (psnid, level),
+                "*%s* ⭐️ *%s*" % (psnid, level),
                 "",
                 "🏆 %s platinums (%s 100%%s)" % (platinum, completed),
-                "",
-                "🥇 %s 🥈 %s 🥉 %s" % (gold, silver, bronze)
+                "     _🥇 %s 🥈 %s 🥉 %s_    " % (gold, silver, bronze)
             ]
         )
 
