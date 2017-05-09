@@ -35,7 +35,7 @@ def __psntrophies(psnid):
     for game in range(len(data['list'])):
         if game <= 5:
 
-            info = "👾  " + data['list'][game]['title'] + "("
+            info = "👾  " + data['list'][game]['title'] + " ("
 
             if data['list'][game]['trophies']['platinum']:
                 info += "🏆 with "
