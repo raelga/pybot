@@ -25,18 +25,25 @@ def __psntrophies(psnid):
     encoding = resp.info().get_content_charset('utf-8')
     data = json.loads(body.decode(encoding))
 
-    games = len(data['list'])
     platinum = 0
     gold = 0
     silver = 0
     bronze = 0
     completed = 0
-    info = "_Recent games played_\n\n"
+    games = []
 
-    for game in range(games):
+    for game in range(len(data['list'])):
         if game <= 5:
-            info += "👾  " + data['list'][game]['title'] + \
-                " (" + repr(data['list'][game]['progress']) + "%)\n"
+
+            info = "👾  " + data['list'][game]['title'] + "("
+
+            if data['list'][game]['trophies']['platinum']:
+                info += "🏆 with "
+
+            info += repr(data['list'][game]['progress']) + "%)"
+
+            games.append(info)
+
         if data['list'][game]['progress'] == 100:
             completed += 1
 
@@ -51,16 +58,18 @@ def __psntrophies(psnid):
     else:
         level = data['curLevel']
 
-        summary = '\n'.join(
-            [
-                "*%s* ⭐️ *%s*" % (psnid, level),
-                "",
-                "🏆 %s platinums (%s 100%%s)" % (platinum, completed),
-                "_     🥇 %s 🥈 %s 🥉 %s_" % (gold, silver, bronze)
-            ]
-        )
+        summary = [
+            "*%s* ⭐️ *%s*" % (psnid, level),
+            "",
+            "🏆 %s platinums (%s 100%%s)" % (platinum, completed),
+            "_     🥇 %s 🥈 %s 🥉 %s_" % (gold, silver, bronze)
+        ]
 
-    return summary + "\n\n" + info
+    return '\n'.join(
+        summary +
+        ["", "Recent games played", ""] +
+        games
+    )
 
 
 def __usage(handler):
