@@ -46,7 +46,7 @@ def __psntrophies(psnid):
         bronze += data['list'][game]['trophies']['bronze']
 
     if not games:
-        return "No information available for *" + psnid + "*," + \
+        return "No information available for *" + psnid + "*, " + \
             "check the user privacy settings."
     else:
         level = data['curLevel']
