@@ -8,7 +8,6 @@
 
 from urllib import request as r
 import json
-import re
 import sys
 import time
 from pybot.common.action import Action
@@ -93,12 +92,6 @@ def ___message_handler(message):
         text=response,
         markup='markdown'
     )
-
-
-def __escape_markdown(text):
-    """Helper function to escape telegram markup symbols"""
-    escape_chars = r'\*_`\['
-    return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
 
 def perfil(message):
