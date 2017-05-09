@@ -27,6 +27,9 @@ def __psntrophies(psnid):
 
     games = len(data['list'])
     platinum = 0
+    gold = 0
+    silver = 0
+    bronze = 0
     completed = 0
     info = "Recent games played:\n\n"
 
@@ -36,14 +39,27 @@ def __psntrophies(psnid):
                 " (" + repr(data['list'][game]['progress']) + "%)\n"
         if data['list'][game]['progress'] == 100:
             completed += 1
-        if data['list'][game]['trophies']['platinum'] == 1:
-            platinum += 1
+
+        platinum += data['list'][game]['trophies']['platinum']
+        gold += data['list'][game]['trophies']['gold']
+        silver += data['list'][game]['trophies']['silver']
+        bronze += data['list'][game]['trophies']['bronze']
 
     if not games:
-        info = "No games available, check the user privacy settings."
+        info = "No games available, check the %s privacy settings."
+    else:
+        level = data['curLevel']
+        points = platinum * 180 + gold * 90 * silver * 30 + bronze * 15
 
-    summary = "*" + psnid + "*\n" + repr(platinum) + \
-        " platinums (" + repr(completed) + " 100%s)"
+        summary = '\n'.join(
+            [
+                "*%s*" % (psnid),
+                "%s platinums (%s 100%%s)" % (platinum, completed),
+                "",
+                "🥇 %s 🥈 %s 🥉 %s" % (gold, silver, bronze),
+                "⭐️ %s - %s points" % (level, points)
+            ]
+        )
 
     return summary + "\n\n" + info
 
