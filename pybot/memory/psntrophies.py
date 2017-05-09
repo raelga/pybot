@@ -55,7 +55,7 @@ def __psntrophies(psnid):
                 "*%s* ⭐️ *%s*" % (psnid, level),
                 "",
                 "🏆 %s platinums (%s 100%%s)" % (platinum, completed),
-                "     _🥇 %s 🥈 %s 🥉 %s_    " % (gold, silver, bronze)
+                "_     🥇 %s 🥈 %s 🥉 %s_" % (gold, silver, bronze)
             ]
         )
 
