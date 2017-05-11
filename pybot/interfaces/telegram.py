@@ -199,7 +199,8 @@ def communicate(bot, update, thoughts):
 def speak(bot, update, words, language=None):
     "Handler for bot text responses."
 
-    LOG.info('I\'ve got something to say: %s' % words)
+    LOG.info('I\'ve got something to say in %s: "%s"' %
+             (update.message.chat_id, words))
 
     if language:
 
@@ -213,7 +214,8 @@ def speak(bot, update, words, language=None):
 def show(bot, update, stuff, media_type, reply_markup=None):
     "Handler for bot responses when he need more than words."
 
-    LOG.info('I\'ve got something to show.')
+    LOG.info('I\'ve got something to show in %s: "%s"' %
+             (update.message.chat_id, stuff))
 
     if reply_markup:
 
