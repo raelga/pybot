@@ -31,7 +31,7 @@ from google.cloud import speech
 # [END import_libraries]
 
 
-def _listen(message):
+def __listen(message):
 
     import requests
     import shutil
