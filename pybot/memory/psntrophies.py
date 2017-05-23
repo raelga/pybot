@@ -59,7 +59,7 @@ def __psntrophies(psnid):
         level = data['curLevel']
 
         summary = [
-            "*%s* ⭐️ *%s* 🏅 %s" %
+            "*%s* ⭐️ *%s* - %s _trophies_" %
             (psnid, level, platinum + gold + silver + bronze),
             "",
             "🏆 %s platinums (%s 100%%s)" % (platinum, completed),
