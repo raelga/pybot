@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
- cheaptalk.py   Vision, obtain a list of tags from an image.
+ vision.py      Vision, obtain a list of tags from an image.
  Author:        Rael Garcia <self@rael.io>
  Date:          12/2016
  Tested on:     Python 3 / OS X 10.11.5
