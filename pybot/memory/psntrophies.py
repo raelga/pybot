@@ -9,6 +9,7 @@
 from urllib import request as r
 import json
 import sys
+import re
 import time
 from pybot.common.action import Action
 
