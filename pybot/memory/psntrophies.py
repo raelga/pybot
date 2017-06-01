@@ -35,7 +35,7 @@ def __psntrophies(psnid):
     for game in range(len(data['list'])):
         if game <= 5:
 
-            info = "👾  " + data['list'][game]['title'] + " - _"
+            info = "👾  " + __escape_markdown(data['list'][game]['title']) + " - _"
 
             if data['list'][game]['trophies']['platinum']:
                 info += "🏆 with "
@@ -72,6 +72,10 @@ def __psntrophies(psnid):
         games
     )
 
+def __escape_markdown(text):
+    """Helper function to escape telegram markup symbols"""
+    escape_chars = r'\*_`\['
+    return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
 def __usage(handler):
     """Prints usage information with the handler command."""
