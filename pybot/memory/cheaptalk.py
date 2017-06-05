@@ -40,6 +40,10 @@ TEXT = [
 
 SKYNET_EMOJIS = ['\U0001f440', '\U0001f60e', '\U0001f60f']
 
+def coin(words):
+    "Listens to coin command and returns a random coin face."
+    return random.choice(['face', 'cross'])
+    
 def hear(words):
     "Implements hear to receive the messages and execute the plugin logic"
 
