@@ -41,9 +41,9 @@ TEXT = [
 SKYNET_EMOJIS = ['\U0001f440', '\U0001f60e', '\U0001f60f']
 
 
-def choice(words):
+def choice(message):
     "Listens to choice command and returns a random choice from words."
-    return random.choice(words.split(' '))
+    return random.choice(message.text.split(' '))
 
 def coin(words):
     "Listens to coin command and returns a random coin face."
