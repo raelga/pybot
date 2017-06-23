@@ -17,7 +17,7 @@ from pybot.common.action import Action
 EVENTS_FILE = os.path.join(os.path.dirname(__file__), "events.json")
 
 
-def __get_message(event, groupid):
+def __get_message(event, message):
     "Responds with information about a subject."
 
     with io.open(EVENTS_FILE, "r", encoding="utf-8") as datafile:
@@ -27,17 +27,23 @@ def __get_message(event, groupid):
         return
 
     if event in events_json:
-        if str(groupid) in events_json[event]:
-            return '\n'.join(events_json[event][str(groupid)])
+        if str(message.chat.chat_id) in events_json[event]:
+            text = '\n'.join(events_json[event][str(message.chat.chat_id)])
+            text = text.replace('#-#username#-#', message.user.name)
+            text = text.replace('#-#groupname#-#',
+                                "*" + message.chat.chat_name + "*")
+            if text:
+                return text
 
     return
 
 
 def user_entering(message):
+    "Response to user entering a group events."
 
     custom_message = __get_message(
         'user_entering',
-        message.chat.chat_id
+        message
     )
 
     if custom_message:
@@ -52,10 +58,11 @@ def user_entering(message):
 
 
 def user_leaving(message):
+    "Response to user leaving a group events."
 
     custom_message = __get_message(
         'user_leaving',
-        message.chat.chat_id
+        message
     )
 
     if custom_message:
@@ -88,4 +95,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
