@@ -108,13 +108,13 @@ def menu_main(message):
     )
 
 
-def menu_groups(message):
+def menu_pkts(message):
     "Returns the Groups menu."
 
     return get_action(
         action="edit_message",
         target=message.message_id,
-        menu=get_menu('menu_groups')
+        menu=get_menu('menu_pkts')
     )
 
 
@@ -144,7 +144,7 @@ def groups(message):
     return get_action(
         action="new_message",
         target=message.message_id,
-        menu=get_menu('menu_groups')
+        menu=get_menu('menu_pkts')
     )
 
 

@@ -1,8 +1,8 @@
 {
-  "Groups": {
+  "pkts": {
     "name": "Groups",
-    "text": "Listado de Grupos, pulsa para unirte.",
-    "callback": "menu_groups",
+    "text": "Listado de Grupos pkts, pulsa para unirte.",
+    "callback": "menu_pkts",
     "options": {
       "Destiny": "https://t.me/pkts_destiny",
       "Space Simulation": "https://t.me/pkts_space",
