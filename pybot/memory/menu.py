@@ -148,6 +148,15 @@ def groups(message):
     )
 
 
+def meristation(message):
+    "Returns the groups menu for the command shortcut `groups`."
+
+    return get_action(
+        action="new_message",
+        target=message.message_id,
+        menu=get_menu('menu_meristation')
+    )
+
 def main(argv):
     "This allows to execute the plugin in standalone mode"
     if len(argv) > 1:

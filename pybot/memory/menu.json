@@ -16,5 +16,16 @@
       "Nintendo": "https://t.me/joinchat/AAAAAEE4x5Mfpz8Jw4Kang",
       "Miscelánea": "https://t.me/miscelanea"
     }
+  },
+  "Meristation": {
+    "name": "Meristation",
+    "text": "Listado de Grupos de *Meristation*, pulsa para unirte.",
+    "callback": "menu_meristation",
+    "options": {
+      "Política": "https://t.me/joinchat/AAAAAED7x-nZJIJ_3JXb0A",
+      "Cine": "https://t.me/joinchat/AAAAAEFoISfTwHbr7vNTHw",
+      "Consolas": "https://t.me/joinchat/AAAAAEFysv9r8M-R33DPbA",
+      "Consoleros": "https://t.me/joinchat/AAAAAEEnOhUJvsyAt7MDrg"
+    }
   }
 }
