@@ -117,6 +117,14 @@ def menu_pkts(message):
         menu=get_menu('menu_pkts')
     )
 
+def menu_meristation(message):
+    "Returns the Meristation menu."
+
+    return get_action(
+        action="edit_message",
+        target=message.message_id,
+        menu=get_menu('menu_meristation')
+    )
 
 def menu_exit(message):
     "Closes the menu."
