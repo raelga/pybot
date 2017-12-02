@@ -99,7 +99,7 @@ def hear(words):
     if top_text:
         meme = Meme('1pWVSQ', top_text.group(1), 'is salty')
 
-    top_text = re.search(r'(.*) retratado', words, re.I | re.M)
+    top_text = re.search(r'(.*) has quedado retratado', words, re.I | re.M)
     if top_text:
         meme = Meme('tyES-A', top_text.group(1), 'has quedado retratado')
 
