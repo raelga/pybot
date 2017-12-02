@@ -101,7 +101,7 @@ def hear(words):
 
     top_text = re.search(r'(.*) has quedado retratado', words, re.I | re.M)
     if top_text:
-        meme = Meme('tyES-A', top_text.group(1), 'has quedado retratado')
+        meme = Meme('HfUbrQ', top_text.group(1), 'has quedado retratado')
 
     if meme:
         LOG.info("Generating meme: %s", meme.src_image_id)
