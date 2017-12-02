@@ -91,9 +91,9 @@ def hear(words):
     if top_text:
         meme = Meme('yDcY5w', top_text.group(1), 'EVERYWHERE')
 
-    top_text = re.search(r'Sony viva Sony', words, re.I | re.M)
+    top_text = re.search(r'(.*) Sony viva Sony', words, re.I | re.M)
     if top_text:
-        meme = Meme('HOhd5g', 'Sony', 'viva Sony')
+        meme = Meme('HOhd5g', op_text.group(1), 'Sony viva Sony')
 
     top_text = re.search(r'(.*) is salty', words, re.I | re.M)
     if top_text:
