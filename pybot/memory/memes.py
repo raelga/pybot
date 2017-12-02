@@ -91,6 +91,14 @@ def hear(words):
     if top_text:
         meme = Meme('yDcY5w', top_text.group(1), 'EVERYWHERE')
 
+    top_text = re.search(r'(.*) yeah', words, re.I | re.M)
+    if top_text:
+        meme = Meme('HOhd5g', top_text.group(1), 'yeah')
+
+    top_text = re.search(r'(.*) is salty', words, re.I | re.M)
+    if top_text:
+        meme = Meme('1pWVSQ', top_text.group(1), 'is salty')
+
     if meme:
         LOG.info("Generating meme: %s", meme.src_image_id)
         return generate_meme(meme)
