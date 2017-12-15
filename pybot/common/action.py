@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"This module contains an object that represents a action."
+"This module contains an object that represents an action."
 
 
 class Action(object):
