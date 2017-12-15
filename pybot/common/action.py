@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-"This module contains an object that represents a action."
+"This module contains an object that represents an action."
 
 
 class Action(object):
-    """This  objectes represents a action.
+    """This  object represents an action.
 
     Use :class:`Action` methods to get instances of this class.
 
