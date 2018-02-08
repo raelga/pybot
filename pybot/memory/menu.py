@@ -127,15 +127,6 @@ def menu_meristation(message):
         menu=get_menu('menu_meristation')
     )
 
-def menu_ceol(message):
-    "Returns the CEOL menu."
-
-    return get_action(
-        action="edit_message",
-        target=message.message_id,
-        menu=get_menu('menu_ceol')
-    )
-
 def menu_exit(message):
     "Closes the menu."
 
@@ -173,15 +164,6 @@ def meristation(message):
         action="new_message",
         target=message.message_id,
         menu=get_menu('menu_meristation')
-    )
-
-def ceol(message):
-    "Returns the groups menu for the command shortcut `ceol`."
-
-    return get_action(
-        action="new_message",
-        target=message.message_id,
-        menu=get_menu('menu_ceol')
     )
 
 def main(argv):
