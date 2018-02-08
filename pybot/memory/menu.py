@@ -66,6 +66,7 @@ def get_menu(menu_callback=None):
         menu = Menu("Available menus.")
         for menu_name, menu_definition in menu_data.items():
             menu.add(menu_name, menu_definition["callback"])
+            menu.add_separator()
 
         if menu.options:
             menu.add_separator()
