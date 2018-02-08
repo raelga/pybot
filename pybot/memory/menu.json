@@ -27,5 +27,17 @@
       "Consolas": "https://t.me/joinchat/DaT4rEFysv-jUpauKnscRg",
       "Consoleros": "https://t.me/joinchat/AAAAAEEnOhUVx5VbIfnAIg"
     }
+  },
+  "CEOL": {
+    "name": "CEOL",
+    "text": "Listado de Grupos de CEOL, pulsa para unirte.",
+    "callback": "menu_ceol",
+    "options": {
+      "Battlefield 1": "https://t.me/joinchat/EjjGuQsGpcUYWLhAK24-Wg",
+      "Battlefront": "https://t.me/joinchat/EjjGuQ7g2va2gsrREaKrOQ",
+      "FIFA": "https://t.me/joinchat/EjjGuQymBnoWJRE8ScZn5w",
+      "Destiny 2": "https://t.me/joinchat/EjjGuQ4CT3Kbe3tvLIfVwA",
+      "GT Sport": "https://t.me/joinchat/EjjGuUtr2ZH20RK6LGrk3g"
+    }
   }
 }
