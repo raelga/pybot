@@ -6,7 +6,12 @@
         ],
         "-1001098035967": ["Bienvenido #-#username#-#, disfruta del grupo #-#groupname#-#. ✌️"],
         "-1001144327297": ["Bienvenido #-#username#-#, disfruta del grupo #-#groupname#-#. ✌️"],
-        "-1001144327297x": ["Test: Hello #-#username#-# 👋👋"]
+        "-1001144327297x": ["Test: Hello #-#username#-# 👋👋"],
+        "-1001097264541": [ 
+            "Bienvenido #-#username#-# al *Clan Carrozas* donde, pese a nuestra edad, los videojuegos siguen siendo nuestra pasión.",
+            "Para conocerte un poco mejor puedes presentarte. Dinos tu PS id, edad, lugar en el que vives y a qué te gusta jugar.",
+            "Esperamos que te encuentres lo más cómodo posible. Si necesitas algo o tienes dudas siempre habrá algún compañero para echarte una mano."
+        ]
     },
     "user_leaving": {
         "-1001144327297": ["Test: See you #-#username#-# 👋"]
