@@ -5,7 +5,7 @@ IMAGE_NAME    := 'pybot'
 
 DOCKER_BUILD	:= docker build . -t $(IMAGE_NAME)
 
-DOCKER_RUN_DIRS	  := -v $(CURDIR):/usr/src/pybot -w /usr/src/pybot
+DOCKER_RUN_DIRS	  := -v "$(CURDIR):/usr/src/pybot" -w /usr/src/pybot
 DOCKER_RUN_FLAGS  := -it --rm --name pybot $(DOCKER_RUN_DIRS) $(IMAGE_NAME)
 DOCKER_RUN 		    := docker run $(DOCKER_RUN_FLAGS)
 
