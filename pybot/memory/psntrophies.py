@@ -21,7 +21,12 @@ def __psntrophies(psnid):
                "User-Agent": "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)"}
 
     req = r.Request(url + psnid, None, headers)
-    resp = r.urlopen(req)
+
+    try:
+        resp = r.urlopen(req, data=None, timeout=15)
+    except:
+        return "Timeout while retrieving trophies for " + psnid
+
     body = resp.read()
     encoding = resp.info().get_content_charset('utf-8')
     data = json.loads(body.decode(encoding))
