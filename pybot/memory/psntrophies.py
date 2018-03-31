@@ -23,7 +23,7 @@ def __psntrophies(psnid):
     req = r.Request(url + psnid, None, headers)
 
     try:
-        resp = r.urlopen(req, data=None, timeout=15)
+        resp = r.urlopen(req, data=None, timeout=30)
     except:
         return "Timeout while retrieving trophies for " + psnid
 
