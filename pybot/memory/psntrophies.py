@@ -124,9 +124,9 @@ def trophies(message):
     return ___message_handler(message)
 
 
-def main():
+def main(args):
     "This allows to execute the plugin in standalone mode"
-    if len(sys.argv) > 1:
+    if len(args) > 1:
 
         from pybot.common.message import Message
         from pybot.common.user import User
@@ -134,7 +134,7 @@ def main():
         user = User(1, 'foo', 'bar', 'rael')
         chat = Chat(1, 'Console', 'Console')
         message = Message(1, user, time.strftime,
-                          ' '.join(sys.argv[1:]), chat, None)
+                          ' '.join(args[1:]), chat, None)
         print(trophies(message))
 
     else:
