@@ -78,7 +78,7 @@ def generate_meme(meme):
         return error_image
 
 
-def do_no_hear(words):
+def do_not_hear(words):
     "Implements hear to receive the messages and execute the plugin logic"
 
     meme = False
