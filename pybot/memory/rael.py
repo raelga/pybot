@@ -14,9 +14,6 @@ def rael_utils(words):
 
     if re.search(r'(^|\s)rael(\s|$)', words, re.I | re.M):
         return "@raelga"
-    
-    if re.search(r'(^|\s)manco(\s|$)', words, re.I | re.M):
-        return "@occisso"
 
 
 def hear(words):
