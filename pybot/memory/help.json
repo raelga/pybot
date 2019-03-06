@@ -2,7 +2,7 @@
     "help": ["To obtain help about a particular command or funcionality, use '/help *command*'.",
         "Available helpers:", "- trophies", "- kdd",
         "",
-        "Issues or requests to @raelga. Code available in [github/raelga/pybot](https://github.com/raelga/pybot)"
+        "Issues or requests to @raelga. Code available in [pybot.dev](https://pybot.dev)"
     ],
     "kdd": [
         "Ejemplos de uso del comando para quedadas:",
