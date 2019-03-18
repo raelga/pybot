@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/raelga/pybot/tree/master.svg?style=svg)](https://circleci.com/gh/raelga/pybot/tree/master)
+
 # pybot
 
 Wrapper for python-telegram-bot to allow dynamic plug-in architecture, an attempt to make python-telegram-bot more hubottish.
