@@ -1,0 +1,29 @@
+version: 2
+defaults: &defaults
+  docker:
+    - image: google/cloud-sdk
+jobs:
+  build:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.6.4
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Generate full image name for new docker image
+          command: |
+            set -x
+            if [ "${CIRCLE_BRANCH}" == "master" ]
+            then
+              DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+              echo "pybot:$DOCKER_IMAGE_TAG" > full_docker_image_name
+            else
+              DOCKER_IMAGE_TAG=${CIRCLE_BRANCH}
+              echo "pybot:$DOCKER_IMAGE_TAG" > full_docker_image_name
+            fi
+      - run:
+          name: Build image
+          command: |
+            FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+            docker build -t $FULL_DOCKER_IMAGE_NAME -f Dockerfile .
