@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${TELEGRAM_BOT_ID}-telegram-bot-token
+type: Opaque
+data:
+  token: ${TELEGRAM_BOT_TOKEN}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${TELEGRAM_BOT_ID}-private
+type: Opaque
+data:
+  bot.token: ${TELEGRAM_BOT_TOKEN}
+  google.auth: ${GCLOUD_BOT_SERVICE_ACCOUNT}
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: ${TELEGRAM_BOT_ID}
+  labels:
+    app: ${TELEGRAM_BOT_ID}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${TELEGRAM_BOT_ID}
+  template:
+    metadata:
+      labels:
+        app: ${TELEGRAM_BOT_ID}
+    spec:
+      containers:
+      - name: ${TELEGRAM_BOT_ID}
+        image: ${FULL_DOCKER_IMAGE_NAME}
+        env:
+        - name: TELEGRAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: ${TELEGRAM_BOT_ID}-telegram-bot-token
+              key: token
+        volumeMounts:
+        - name: private
+          mountPath: /usr/src/pybot/conf/private
+          readOnly: true
+      volumes:
+      - name: private
+        secret:
+          secretName: ${TELEGRAM_BOT_ID}-private
