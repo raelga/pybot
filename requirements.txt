@@ -39,11 +39,11 @@ python-dateutil==2.6.0
 python-telegram-bot==5.3.0
 pytz==2017.2
 regex==2017.4.23
-requests==2.13.0
+requests==2.20.0
 rsa==3.4.2
 ruamel.yaml==0.14.10
 six==1.10.0
 tzlocal==1.4
 uritemplate==3.0.0
-urllib3==1.20
+urllib3==1.23
 wrapt==1.10.10
