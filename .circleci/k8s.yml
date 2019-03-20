@@ -14,7 +14,7 @@ metadata:
 type: Opaque
 data:
   bot.token: ${TELEGRAM_BOT_TOKEN}
-  google.auth: ${GCLOUD_BOT_SERVICE_ACCOUNT}
+  google.auth: ${TELEGRA_BOT_GCLOUD_SERVICE_KEY}
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -33,8 +33,8 @@ spec:
         app: ${TELEGRAM_BOT_ID}
     spec:
       containers:
-      - name: ${TELEGRAM_BOT_ID}
-        image: ${FULL_DOCKER_IMAGE_NAME}
+      - name: pybot
+        image: ${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
         env:
         - name: TELEGRAM_TOKEN
           valueFrom:
@@ -45,6 +45,13 @@ spec:
         - name: private
           mountPath: /usr/src/pybot/conf/private
           readOnly: true
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 200m
+          limits:
+            memory: 128Mi
+            cpu: 500m
       volumes:
       - name: private
         secret:
