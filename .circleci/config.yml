@@ -34,19 +34,56 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+  gke-deploy:
+    docker:
+      - image: google/cloud-sdk:239.0.0
+    steps:
+      - run:
+          name: Initialize gcloud CLI to connect to Google Cloud
+          command: |
+            # Set sudo to work whether logged in as root user or non-root user
+            if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+
+            # Store service account
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+
+            # Initialize gcloud CLI
+            $SUDO gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            $SUDO gcloud --quiet config set project $GOOGLE_PROJECT_ID
+            $SUDO gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE
+      - run:
+          name: Install kubectl if missing
+          command: |
+            which kubectl || gcloud components install kubectl --quiet
+      - run:
+          name: Update k8s deployment image
+          command: |
+            # Get cluster credentials
+            gcloud container clusters get-credentials ${GKE_CLUSTER}
+            # Update deployment image
+            kubectl --namespace ${K8S_NAMESPACE} \
+              set image deployment/${K8S_DEPLOYMENT} \
+              ${CONTAINER_REGISTRY}/${GOOGLE_PROJECT_ID}/${DOCKER_IMAGE_NAME}:v${CIRCLE_BUILD_NUM}
+
 workflows:
   version: 2
-  build-and-test:
+  build-and-deploy:
     jobs:
       - build
 
-  gcr-push:
-    jobs:
       - gcr/build_and_push_image:
           context: kubone
-          image: bots/pybot
+          registry-url: ${CONTAINER_REGISTRY}
+          image: ${DOCKER_IMAGE_NAME}
           tag: v${CIRCLE_BUILD_NUM}
           filters:
             branches:
               only:
                 - master
+          requires:
+            - build
+
+      - gke-deploy:
+          context: kubone
+          requires:
+            - gcr/build_and_push_image
