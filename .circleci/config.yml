@@ -6,6 +6,7 @@ orbs:
   k8s: circleci/kubernetes@0.1.0
 
 jobs:
+
   build:
     docker:
       - image: circleci/python:3.6.1
@@ -78,7 +79,9 @@ workflows:
   build-and-test:
     jobs:
       - build
-  gcloud-push:
+  gcr-push:
     jobs:
-      - gcloud/install_and_initialize_cli:
+      - gcr/build_and_push_image:
           context: kubone
+          image: bots/pybot
+          tag: v${CIRCLE_BUILD_NUM}
