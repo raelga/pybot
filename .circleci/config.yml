@@ -1,44 +1,69 @@
 version: 2
-defaults: &defaults
-  docker:
-    - image: google/cloud-sdk
+
 jobs:
   build:
-    <<: *defaults
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+
     steps:
       - checkout
-      - setup_remote_docker
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
       - run:
-          name: Generate full image name for new docker image
+          name: install dependencies
           command: |
-            set -x
-            if [ "${CIRCLE_BRANCH}" == "master" ]
-            then
-              DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
-              echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
-            else
-              DOCKER_IMAGE_TAG=${CIRCLE_BRANCH}
-              echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
-            fi
-      - run:
-          name: Build image
-          command: |
-            FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
-            docker build -t $FULL_DOCKER_IMAGE_NAME -f Dockerfile .
-      - run:
-          name: Push image
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]
-            then
-              FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
-              echo $GCLOUD_GCR_SERVICE_ACCOUNT | base64 --decode --ignore-garbage > gcloud-service-key.json
-              gcloud auth activate-service-account --key-file gcloud-service-key.json
-              gcloud --quiet auth configure-docker
-              docker push $FULL_DOCKER_IMAGE_NAME
-            else
-              echo "Not master branch; skipping image push.."
-            fi
-      - persist_to_workspace:
-          root: .
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
           paths:
-            - full_docker_image_name
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+  # build:
+  #   <<: *defaults
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - run:
+  #         name: Generate full image name for new docker image
+  #         command: |
+  #           set -x
+  #           if [ "${CIRCLE_BRANCH}" == "master" ]
+  #           then
+  #             DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+  #             echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
+  #           else
+  #             DOCKER_IMAGE_TAG=${CIRCLE_BRANCH}
+  #             echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
+  #           fi
+  #     - run:
+  #         name: Build image
+  #         command: |
+  #           FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+  #           docker build -t $FULL_DOCKER_IMAGE_NAME -f Dockerfile .
+  #     - run:
+  #         name: Push image
+  #         command: |
+  #           if [ "${CIRCLE_BRANCH}" == "master" ]
+  #           then
+  #             FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+  #             echo $GCLOUD_GCR_SERVICE_ACCOUNT | base64 --decode --ignore-garbage > gcloud-service-key.json
+  #             gcloud auth activate-service-account --key-file gcloud-service-key.json
+  #             gcloud --quiet auth configure-docker
+  #             docker push $FULL_DOCKER_IMAGE_NAME
+  #           else
+  #             echo "Not master branch; skipping image push.."
+  #           fi
+  #     - persist_to_workspace:
+  #         root: .
+  #         paths:
+  #           - full_docker_image_name
