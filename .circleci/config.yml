@@ -1,4 +1,9 @@
-version: 2
+version: 2.1
+
+orbs:
+  gcloud: circleci/gcp-cli@1.0.0
+  gcr: circleci/gcp-gcr@0.0.2
+  k8s: circleci/kubernetes@0.1.0
 
 jobs:
   build:
@@ -28,42 +33,52 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-  # build:
-  #   <<: *defaults
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker
-  #     - run:
-  #         name: Generate full image name for new docker image
-  #         command: |
-  #           set -x
-  #           if [ "${CIRCLE_BRANCH}" == "master" ]
-  #           then
-  #             DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
-  #             echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
-  #           else
-  #             DOCKER_IMAGE_TAG=${CIRCLE_BRANCH}
-  #             echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
-  #           fi
-  #     - run:
-  #         name: Build image
-  #         command: |
-  #           FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
-  #           docker build -t $FULL_DOCKER_IMAGE_NAME -f Dockerfile .
-  #     - run:
-  #         name: Push image
-  #         command: |
-  #           if [ "${CIRCLE_BRANCH}" == "master" ]
-  #           then
-  #             FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
-  #             echo $GCLOUD_GCR_SERVICE_ACCOUNT | base64 --decode --ignore-garbage > gcloud-service-key.json
-  #             gcloud auth activate-service-account --key-file gcloud-service-key.json
-  #             gcloud --quiet auth configure-docker
-  #             docker push $FULL_DOCKER_IMAGE_NAME
-  #           else
-  #             echo "Not master branch; skipping image push.."
-  #           fi
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - full_docker_image_name
+  build-docker-image:
+
+    docker:
+      - image: google/gcloud-sdk:alpine
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Generate full image name for new docker image
+          command: |
+            set -x
+            if [ "${CIRCLE_BRANCH}" == "master" ]
+            then
+              DOCKER_IMAGE_TAG=v${CIRCLE_BUILD_NUM}
+              echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
+            else
+              DOCKER_IMAGE_TAG=${CIRCLE_BRANCH}
+              echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
+            fi
+      - run:
+          name: Build image
+          command: |
+            FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+            docker build -t $FULL_DOCKER_IMAGE_NAME -f Dockerfile .
+      - run:
+          name: Push image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]
+            then
+              FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+              echo $GCLOUD_GCR_SERVICE_ACCOUNT | base64 --decode --ignore-garbage > gcloud-service-key.json
+              gcloud auth activate-service-account --key-file gcloud-service-key.json
+              gcloud --quiet auth configure-docker
+              docker push $FULL_DOCKER_IMAGE_NAME
+            else
+              echo "Not master branch; skipping image push.."
+            fi
+      - persist_to_workspace:
+          root: .
+          paths:
+            - full_docker_image_name
+workflows:
+  build-and-test:
+    jobs:
+      - build
+  gcloud-push:
+    jobs:
+      - gcloud/install_and_initialize_cli:
+          context: kubone
