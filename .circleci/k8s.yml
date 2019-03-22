@@ -51,7 +51,7 @@ spec:
             cpu: 200m
           limits:
             memory: 128Mi
-            cpu: 500m
+            cpu: 300m
       volumes:
       - name: private
         secret:
