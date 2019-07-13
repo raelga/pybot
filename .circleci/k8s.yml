@@ -14,7 +14,7 @@ metadata:
 type: Opaque
 data:
   bot.token: ${TELEGRAM_BOT_TOKEN}
-  google.auth: ${TELEGRA_BOT_GCLOUD_SERVICE_KEY}
+  google.auth: ${TELEGRAM_BOT_GCLOUD_SERVICE_KEY}
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
