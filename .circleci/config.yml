@@ -92,12 +92,12 @@ workflows:
       - build
 
       - gcr-build-and-push:
-          context: glados
+          context: kubone
           requires:
             - build
 
       - gke-deploy:
-          context: glados
+          context: kubone
           filters:
             branches:
               only:
