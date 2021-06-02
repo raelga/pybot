@@ -45,5 +45,5 @@ ruamel.yaml==0.14.10
 six==1.10.0
 tzlocal==1.4
 uritemplate==3.0.0
-urllib3==1.24.2
+urllib3==1.26.5
 wrapt==1.10.10
