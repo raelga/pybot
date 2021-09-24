@@ -1,7 +1,14 @@
-FROM python:3-onbuild
+FROM docker.io/library/python:3.9-slim
 
-COPY . /usr/src/pybot
+ENV PYTHONPATH /usr/src/app
+WORKDIR /usr/src/app
 
-WORKDIR /usr/src/pybot
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache -r requirements.txt
 
-CMD bin/pybot telegram 
+COPY bin bin
+COPY pybot pybot
+COPY conf/pybot.conf conf/
+
+ENTRYPOINT [ "bin/pybot" ]
