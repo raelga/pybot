@@ -1,13 +1,18 @@
-VENV_DIR      := .venv
-VENV_RUN      := . $(VENV_DIR)/bin/activate
+#!/usr/bin/env make
+.PHONY: usage setup-env lint telegram \
+	win-setup-venv win-telegram win-cleanup \
+	container-build container-telegram container-bash container-lint container-clean
 
-IMAGE_NAME    := 'pybot'
+VENV_DIR := .venv
+VENV_RUN := . $(VENV_DIR)/bin/activate
 
-DOCKER_BUILD	:= docker build . -t $(IMAGE_NAME)
+CONTAINER_IMAGE  := 'pybot'
+CONTAINER_ENGINE ?= $(which docker)
+CONTAINER_BUILD  := $(CONTAINER_ENGINE) build . -t $(CONTAINER_IMAGE)
 
-DOCKER_RUN_DIRS	  := -v "$(CURDIR):/usr/src/pybot" -w /usr/src/pybot
-DOCKER_RUN_FLAGS  := -it --rm --name pybot $(DOCKER_RUN_DIRS) $(IMAGE_NAME)
-DOCKER_RUN 		    := docker run $(DOCKER_RUN_FLAGS)
+CONTAINER_RUN_DIRS  := -v "$(CURDIR):/usr/src/pybot" -w /usr/src/pybot
+CONTAINER_RUN_FLAGS := -it --rm --name pybot $(CONTAINER_RUN_DIRS) $(CONTAINER_IMAGE)
+CONTAINER_RUN       := $(CONTAINER_ENGINE) run $(CONTAINER_RUN_FLAGS)
 
 PYTHON_LINT       := pep8 --max-line-length=120 --exclude=$(VENV_DIR),dist .
 
@@ -17,9 +22,9 @@ usage:            ## Show this help
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 setup-venv:       ## Setup virtualenv
-	(test `which virtualenv` || pip install virtualenv || sudo pip install virtualenv)
-	(test -e $(VENV_DIR) || virtualenv -p python3 $(VENV_DIR))
-	($(VENV_RUN) && pip install --upgrade pip)
+	(test `which virtualenv` || python3 -m pip install --upgrade virtualenv)
+	(test -e $(VENV_DIR) || python3 -m venv $(VENV_DIR))
+	($(VENV_RUN) && python3 -m pip install --upgrade pip)
 	(test ! -e requirements.txt || ($(VENV_RUN) && pip install -r requirements.txt))
 
 clean:
@@ -45,17 +50,17 @@ win-telegram:     ## Run pybot with the telegram adapter in windows
 win-cleanup:      ## Remove .venv dir
 	rmdir /s /q .venv
 
-docker-build:     ## Build the docker image for running pybot
-	$(DOCKER_BUILD)
+container-build:     ## Build the container image for running pybot
+	$(CONTAINER_BUILD)
 
-docker-telegram:  ## Run with telegram adapter in the docker container
-	$(DOCKER_RUN) $(PYBOT_TELEGRAM)
+container-telegram:  ## Run with telegram adapter in the container container
+	$(CONTAINER_RUN) $(PYBOT_TELEGRAM)
 
-docker-bash:      ## Run bash in the docker container
-	$(DOCKER_RUN) bash
+container-bash:      ## Run bash in the container container
+	$(CONTAINER_RUN) bash
 
-docker-lint:      ## Run pep8 in the docker container
-	$(DOCKER_RUN) $(PYTHON_LINT)
+container-lint:      ## Run pep8 in the container container
+	$(CONTAINER_RUN) $(PYTHON_LINT)
 
-docker-clean:     ## Remove the docker image
-	docker rmi $(IMAGE_NAME)
+container-clean:     ## Remove the container image
+	$(CONTAINER_ENGINE) rmi $(CONTAINER_IMAGE)
