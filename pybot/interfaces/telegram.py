@@ -17,7 +17,6 @@ import requests
 import telegram
 from telegram.ext import (CallbackQueryHandler, CommandHandler, Filters,
                           MessageHandler, Updater)
-
 import pybot.brain as brain
 from pybot.common.action import Action
 from pybot.common.chat import Chat
@@ -314,6 +313,27 @@ def execute(bot, update, action):
 
             speak(bot, update, action.text)
 
+    elif action.name == 'list_admins':
+
+        admins = get_admins(bot, update)
+        if admins != None:
+          for admin in admins:
+            action.text += " " + admin.user.name
+          speak(bot, update, action.text,
+                    language=telegram.ParseMode.HTML)
+
+def get_admins(bot, update):
+  try:
+    return bot.getChatAdministrators(
+      chat_id=update.message.chat_id, timeout=8
+    )
+  except TimeoutExpired as exception:
+    LOG.warning("Timeout while fetching chat admins. (%s)", exception)
+  except TypeError as err:
+    LOG.warning("Unable to fetch chat admins: (%s)", err)
+  except telegram.error.BadRequest as err:
+    LOG.warning(err.message)
+  return None
 
 def get_menu(data, columns=2):
     "Function to convert an array to Telegram InlineKeyboard."

@@ -28,16 +28,16 @@ class Action(object):
 
     def __init__(self,
                  name,
-                 target,
-                 text,
+                 target=None,
+                 text=None,
                  markup=None,
                  payload=None):
 
         # Required
         self.name = name
+        # Optionals
         self.target = target
         self.text = text
-        # Optionals
         self.markup = markup
         self.payload = payload
 
