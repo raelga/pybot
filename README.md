@@ -44,7 +44,7 @@ Starting pybot using conf token file. CTRL-C to quit.
 
 ### Contributing
 
-Contributions of all sizes are welcome. 
+Contributions of all sizes are welcome.
 
 ### License
 
