@@ -36,26 +36,28 @@ spec:
         app: ${TELEGRAM_BOT_ID}
     spec:
       containers:
-      - name: pybot
-        image: ${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
-        env:
-        - name: TELEGRAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: ${TELEGRAM_BOT_ID}-telegram-bot-token
-              key: token
-        volumeMounts:
-        - name: private
-          mountPath: /usr/src/pybot/conf/private
-          readOnly: true
-        resources:
-          requests:
-            memory: 64Mi
-            cpu: 200m
-          limits:
-            memory: 128Mi
-            cpu: 300m
+        - name: pybot
+          image: ${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
+          args:
+            - telegram
+          env:
+            - name: TELEGRAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ${TELEGRAM_BOT_ID}-telegram-bot-token
+                  key: token
+          volumeMounts:
+            - name: private
+              mountPath: /usr/src/pybot/conf/private
+              readOnly: true
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 128Mi
+              cpu: 300m
       volumes:
-      - name: private
-        secret:
-          secretName: ${TELEGRAM_BOT_ID}-private
+        - name: private
+          secret:
+            secretName: ${TELEGRAM_BOT_ID}-private
