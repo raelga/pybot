@@ -48,7 +48,7 @@ spec:
                   key: token
           volumeMounts:
             - name: private
-              mountPath: /usr/src/pybot/conf/private
+              mountPath: /usr/src/app/conf/private
               readOnly: true
           resources:
             requests:
