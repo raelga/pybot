@@ -62,7 +62,7 @@ def listen(message):
         if os.path.isfile(path):
             os.remove(path)
 
-        return 'dafuq?'
+        raise
 
 
 def transcribe(speech_file):

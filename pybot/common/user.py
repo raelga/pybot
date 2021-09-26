@@ -13,8 +13,9 @@ class User(object):
         first_name (str):
         last_name (str):
         username (str):
-        specie (str):
         photo (srt):
+        bio (srt):
+        human (bool):
 
     Args:
         user_id (int):
@@ -23,8 +24,8 @@ class User(object):
     Keyword Args:
         last_name (Optional[str]):
         username (Optional[str]):
-        specie (Optional[str]):
         photo (Optional[str]):
+        human (Optional[bool]):
     """
 
     def __init__(self,
@@ -32,17 +33,19 @@ class User(object):
                  first_name,
                  last_name=None,
                  username=None,
-                 specie=None,
-                 photo=None):
+                 photo=None,
+                 bio=None,
+                 human=None):
 
         # Required
         self.user_id = int(user_id)
         self.first_name = first_name
         # Optionals
-        self.specie = specie
         self.last_name = last_name
         self.username = username
         self.photo = photo
+        self.bio = bio
+        self.human = human
 
     @property
     def name(self):

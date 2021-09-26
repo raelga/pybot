@@ -12,11 +12,14 @@ import os
 import re
 from importlib import reload
 from subprocess import Popen, PIPE, TimeoutExpired
+from typing import Text
 
 import requests
 import telegram
+from telegram import Update
 from telegram.ext import (CallbackQueryHandler, CommandHandler, Filters,
                           MessageHandler, Updater)
+from telegram.ext.callbackcontext import CallbackContext
 import pybot.brain as brain
 from pybot.common.action import Action
 from pybot.common.chat import Chat
@@ -30,7 +33,7 @@ logging.basicConfig(
 LOG = logging.getLogger(__name__)
 
 
-def kill_process(pid):
+def kill_process(pid: int):
 
     pgrp = os.getpgid(pid)
     os.killpg(pgrp, signal.SIGINT)
@@ -38,7 +41,7 @@ def kill_process(pid):
     print(out.decode('utf-8'))
 
 
-def update_yourself(bot, update):
+def update_yourself(update: Update, ctx: CallbackContext):
     "Pulls the git repo to update its own code."
 
     repo_url = "git://github.com/raelga/pybot"
@@ -69,33 +72,41 @@ def update_yourself(bot, update):
         reload(brain)
 
     if response:
-        speak(bot, update, response)
+        speak(ctx.bot, update, response)
     else:
         if err:
             LOG.error(err.decode('utf-8'))
-        speak(bot, update, "Ignoring update, something went wrong.")
+        speak(ctx.bot, update, "Ignoring update, something went wrong.")
 
 
-def error(bot, update, error_message):
+def error(update: Update, ctx: CallbackContext):
     "Error handler function"
     LOG.error('Update "%s" caused error "%s" for %s',
-              update, error_message, bot.id)
+              update, ctx.error.args, ctx.bot.id)
 
 
-def message_from_update(update, media=None):
+def message_from_update(ctx: CallbackContext, update: Update, media=None):
     "Define a pybot message based on the telegram meesage"
+
+    try:
+        uchat = ctx.bot.getChat(chat_id=update.message.from_user.id)
+    except telegram.TelegramError as err:
+        LOG.warning("Error: (%s)", err)
 
     pybot_user = User(
         user_id=update.message.from_user.id,
         first_name=update.message.from_user.first_name,
         last_name=update.message.from_user.last_name,
+        bio=uchat.bio,
         username=update.message.from_user.username,
-        specie=update.message.from_user.type)
+        human=(not(update.message.from_user.is_bot))
+    )
 
     pybot_chat = Chat(
         chat_id=update.message.chat.id,
         chat_type=update.message.chat.type,
-        chat_name=update.message.chat.title)
+        chat_name=update.message.chat.title
+    )
 
     pybot_message = Message(
         message_id=update.message.message_id,
@@ -103,80 +114,87 @@ def message_from_update(update, media=None):
         chat=pybot_chat,
         date=update.message.date,
         text=update.message.text,
-        media=media)
+        media=media
+    )
 
     return pybot_message
 
 
-def interact(bot, update, action):
+def interact(ctx: CallbackContext, update: Update,  action):
     "Handler for interactions"
 
-    responses = brain.interact(action, message_from_update(update))
+    responses = brain.interact(action, message_from_update(ctx, update))
 
     if responses:
-        communicate(bot, update, responses)
+        communicate(ctx, update, responses)
 
 
-def hear(bot, update):
+def hear(update: Update, ctx: CallbackContext):
     "Handler for text messages"
 
-    cmd = re.search(r'^(!|\/)(\w+)\s?.*', update.message.text)
+    try:
+        cmd = re.search(r'^(!|\/)(\w+)\s?.*', update.message.text)
+    except telegram.TelegramError as err:
+        LOG.warning("Error: (%s)", err)
 
     if cmd:
 
-        interact(bot, update, cmd.groups()[1].lower())
+        interact(ctx, update, cmd.groups()[1].lower())
 
     else:
 
-        interact(bot, update, 'interact')
+        interact(ctx, update, 'interact')
 
     thoughts = brain.ears(update.message.text)
 
-    remember(bot, update)
+    remember(ctx, update)
+
     if thoughts:
-        communicate(bot, update, thoughts)
+        communicate(ctx, update, thoughts)
 
 
-def view(bot, update):
+def view(update: Update, ctx: CallbackContext):
     "Function to handle photo messages."
 
-    url = bot.getFile(
+    url = ctx.bot.getFile(
         update.message.photo[-1].file_id).file_path
 
     thoughts = brain.eyes(url)
 
-    remember(bot, update, media=url)
+    remember(ctx, update, media=url)
+
     if thoughts:
-        communicate(bot, update, thoughts)
+        communicate(ctx, update, thoughts)
 
 
-def listen(bot, update):
+def listen(update: Update, ctx: CallbackContext):
     "Function to handle photo messages."
-    url = bot.getFile(update.message.voice.file_id).file_path
 
-    thoughts = brain.interact('listen', message_from_update(update, url))
+    url = ctx.bot.getFile(update.message.voice.file_id).file_path
 
-    remember(bot, update, media=url)
+    thoughts = brain.interact('listen', message_from_update(ctx, update, url))
+
+    remember(ctx, update, media=url)
 
     if thoughts:
-        communicate(bot, update, thoughts)
+        communicate(ctx, update, thoughts)
 
 
-def events(bot, update):
+def events(update: Update, ctx: CallbackContext):
     "Function to handle group events."
 
     if update.message.new_chat_member is not None:
         LOG.info('New member')
-        interact(bot, update, 'user_entering')
+        interact(ctx, update, 'user_entering')
 
     if update.message.left_chat_member is not None:
         LOG.info('Member left')
-        interact(bot, update, 'user_leaving')
+        interact(ctx, update, 'user_leaving')
 
-    remember(bot, update)
+    remember(ctx, update)
 
 
-def communicate(bot, update, thoughts):
+def communicate(ctx: CallbackContext, update: Update, thoughts):
     "Handler for bot text responses."
 
     for thought in thoughts:
@@ -184,18 +202,18 @@ def communicate(bot, update, thoughts):
         if isinstance(thought, str):
 
             if os.path.isfile(thought):
-                show(bot, update, thought, 'file')
+                show(ctx, update, thought, 'file')
             elif thought.startswith('http'):
-                show(bot, update, thought, 'url')
+                show(ctx, update, thought, 'url')
             else:
-                speak(bot, update, thought)
+                speak(ctx, update, thought)
 
         elif isinstance(thought, Action):
 
-            execute(bot, update, thought)
+            execute(ctx, update, thought)
 
 
-def speak(bot, update, words, language=None):
+def speak(ctx: CallbackContext, update: Update, words: str, language=None):
     "Handler for bot text responses."
 
     LOG.info('I\'ve got something to say in %s: "%s"' %
@@ -203,14 +221,14 @@ def speak(bot, update, words, language=None):
 
     if language:
 
-        bot.sendMessage(update.message.chat_id,
-                        text=words, parse_mode=language)
+        ctx.bot.sendMessage(update.message.chat_id,
+                            text=words, parse_mode=language)
     else:
 
-        bot.sendMessage(update.message.chat_id, text=words)
+        ctx.bot.sendMessage(update.message.chat_id, text=words)
 
 
-def show(bot, update, stuff, media_type, reply_markup=None):
+def show(ctx: CallbackContext,  update: Update, stuff, media_type, reply_markup=None):
     "Handler for bot responses when he need more than words."
 
     LOG.info('I\'ve got something to show in %s: "%s"' %
@@ -218,10 +236,10 @@ def show(bot, update, stuff, media_type, reply_markup=None):
 
     if reply_markup:
 
-        bot.sendMessage(update.message.chat_id,
-                        text=stuff,
-                        parse_mode=media_type,
-                        reply_markup=reply_markup)
+        ctx.bot.sendMessage(update.message.chat_id,
+                            text=stuff,
+                            parse_mode=media_type,
+                            reply_markup=reply_markup)
     else:
 
         try:
@@ -243,97 +261,99 @@ def show(bot, update, stuff, media_type, reply_markup=None):
 
             if thing and stuff.lower().endswith(('.png', '.jpg', '.jpeg')):
 
-                bot.sendPhoto(update.message.chat_id, photo=thing)
+                ctx.bot.sendPhoto(update.message.chat_id, photo=thing)
 
             elif thing:
 
-                bot.sendDocument(update.message.chat_id, document=thing)
+                ctx.bot.sendDocument(update.message.chat_id, document=thing)
 
         except OSError as err:
             LOG.warning("I can't show the %s. (%s)", stuff, err)
-            bot.sendMessage(update.message.chat_id, text=stuff)
+            ctx.bot.sendMessage(update.message.chat_id, text=stuff)
 
 
-def edit(bot, update, text, reply_markup=None):
+def edit(ctx: CallbackContext, update: Update, text: str, reply_markup=None):
     "Update an existing message"
 
     if reply_markup:
 
-        bot.editMessageText(text=text,
-                            parse_mode=telegram.ParseMode.HTML,
-                            reply_markup=reply_markup,
-                            chat_id=update.message.chat_id,
-                            message_id=update.message.message_id)
+        ctx.bot.editMessageText(text=text,
+                                parse_mode=telegram.ParseMode.HTML,
+                                reply_markup=reply_markup,
+                                chat_id=update.message.chat_id,
+                                message_id=update.message.message_id)
 
     else:
 
-        bot.editMessageText(text=text,
-                            chat_id=update.message.chat_id,
-                            message_id=update.message.message_id)
+        ctx.bot.editMessageText(text=text,
+                                chat_id=update.message.chat_id,
+                                message_id=update.message.message_id)
 
 
-def callback_handler(bot, update):
+def callback_handler(update: Update, ctx: CallbackContext):
     """Function to handle the telegram callbacks"""
-    interact(bot, update.callback_query, update.callback_query.data)
+    interact(ctx, update.callback_query, update.callback_query.data)
 
 
-def execute(bot, update, action):
+def execute(ctx: CallbackContext, update: Update,  action):
     "Function to print a dynamic menu"
 
     if action.name == 'edit_message':
 
         if action.markup == 'menu':
 
-            edit(bot, update, action.text,
+            edit(ctx, update, action.text,
                  reply_markup=get_menu(action.payload))
 
         elif action.text:
 
-            edit(bot, update, action.text)
+            edit(ctx, update, action.text)
 
     elif action.name == 'new_message':
 
         if action.markup == 'menu':
 
-            show(bot, update, action.text,
+            show(ctx, update, action.text,
                  media_type=telegram.ParseMode.HTML,
                  reply_markup=get_menu(action.payload))
 
         elif action.markup == 'markdown':
 
-            speak(bot, update, action.text,
+            speak(ctx, update, action.text,
                   language=telegram.ParseMode.MARKDOWN)
 
         elif action.markup == 'html':
 
-            speak(bot, update, action.text,
+            speak(ctx, update, action.text,
                   language=telegram.ParseMode.HTML)
 
         elif action.text:
 
-            speak(bot, update, action.text)
+            speak(ctx, update, action.text)
 
     elif action.name == 'list_admins':
 
-        admins = get_admins(bot, update)
+        admins = get_admins(ctx, update)
         if admins != None:
-          for admin in admins:
-            action.text += " " + admin.user.name
-          speak(bot, update, action.text,
-                    language=telegram.ParseMode.HTML)
+            for admin in admins:
+                action.text += " " + admin.user.name
+            speak(ctx, update, action.text,
+                  language=telegram.ParseMode.HTML)
 
-def get_admins(bot, update):
-  try:
-    return bot.getChatAdministrators(
-      chat_id=update.message.chat_id, timeout=8
-    )
-  except TimeoutExpired as exception:
-    LOG.warning("Timeout while fetching chat admins. (%s)", exception)
-  except TypeError as err:
-    LOG.warning("Unable to fetch chat admins: (%s)", err)
-  except telegram.error.BadRequest as err:
-    LOG.warning(err.message)
-  return None
+
+def get_admins(ctx: CallbackContext, update: Update):
+    try:
+        return ctx.bot.getChatAdministrators(
+            chat_id=update.message.chat_id, timeout=8
+        )
+    except TimeoutExpired as exception:
+        LOG.warning("Timeout while fetching chat admins. (%s)", exception)
+    except TypeError as err:
+        LOG.warning("Unable to fetch chat admins: (%s)", err)
+    except telegram.error.BadRequest as err:
+        LOG.warning(err.message)
+    return None
+
 
 def get_menu(data, columns=2):
     "Function to convert an array to Telegram InlineKeyboard."
@@ -368,10 +388,10 @@ def get_menu(data, columns=2):
     return telegram.InlineKeyboardMarkup(menu)
 
 
-def remember(bot, update, media=None):
+def remember(ctx: CallbackContext, update: Update, media=None):
     """Handler to store all message info in the brain."""
 
-    brain.remember(message_from_update(update, media=media))
+    brain.remember(message_from_update(ctx, update, media))
 
 
 def start():
