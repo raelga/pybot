@@ -42,7 +42,7 @@ def update_yourself(bot, update):
     "Pulls the git repo to update its own code."
 
     repo_url = "git://github.com/raelga/pybot"
-    repo_branch = "master"
+    repo_branch = "main"
 
     if os.environ['GITHUB_REPO']:
         repo_url = os.environ['GITHUB_REPO']
