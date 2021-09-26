@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/raelga/pybot/tree/master.svg?style=svg)](https://circleci.com/gh/raelga/pybot/tree/master)
+[![CircleCI](https://circleci.com/gh/raelga/pybot/tree/main.svg?style=svg)](https://circleci.com/gh/raelga/pybot/tree/main)
 
 # pybot
 
