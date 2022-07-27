@@ -38,7 +38,7 @@ def __get_message(event, message):
     return
 
 
-def user_entering(message):
+def __user_entering(message):
     "Response to user entering a group events."
 
     custom_message = __get_message(
