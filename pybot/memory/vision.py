@@ -15,7 +15,7 @@ from googleapiclient import discovery
 from oauth2client.client import GoogleCredentials
 # [END import_libraries]
 
-DEBUG = 0
+DEBUG = 1
 
 def see(url):
 
