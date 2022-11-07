@@ -15,7 +15,7 @@ from googleapiclient import discovery
 from oauth2client.client import GoogleCredentials
 # [END import_libraries]
 
-DEBUG = 1
+DEBUG = 0
 
 def see(url):
 
@@ -73,7 +73,7 @@ def process(photo_file):
                         score = attr['score']
                         if DEBUG:
                             res = res + ("- %s [%.2f]\n" % (label, score))
-                        if label == 'cat':
+                        if label.lower() == 'cat':
                             res = 'Gatos @raelga!!'
 
                     if DEBUG:
